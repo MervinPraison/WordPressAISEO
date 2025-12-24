@@ -1,17 +1,28 @@
-# Development files
+# Version control
 .git
 .gitignore
+.gitattributes
+
+# Environment files
 .env
 .env.example
+.env.*
 
-# Documentation
+# Documentation (not permitted - only readme.txt allowed)
+*.md
 TESTING.md
 ARCHITECTURE.md
 WORDPRESS-ORG-CHECKLIST.md
+README.md
+ADMIN-UI-STATUS.md
+NONCE-FIX-SUMMARY.md
+SUMMARY.md
+UI-BACKEND-MAPPING.md
 
 # Tests
 tests/
 test-results-*.log
+*.log
 
 # Build files
 node_modules/
@@ -20,6 +31,18 @@ composer.json
 composer.lock
 package.json
 package-lock.json
+
+# Build scripts
+build-wordpress-org.sh
+add-logging.js
+publish.sh
+create-zip.sh
+
+# Config files (not permitted)
+*.ini
+*.ini.example
+*.jsonl
+api-index.jsonl
 
 # IDE files
 .vscode/
@@ -31,3 +54,25 @@ package-lock.json
 # OS files
 .DS_Store
 Thumbs.db
+**/.DS_Store
+
+# Hidden files (not permitted)
+.gitkeep
+**/.gitkeep
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+*.temp
+
+# Distribution files
+*.zip
+
+# Other plugin files (not for this package)
+seo-wordpress.php
+
+# Distignore itself
+.distignore

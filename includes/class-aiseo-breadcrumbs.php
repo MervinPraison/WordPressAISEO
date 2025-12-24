@@ -100,7 +100,7 @@ class AISEO_Breadcrumbs {
      * @param array $args Optional arguments
      */
     public function display($args = array()) {
-        echo $this->render($args);
+        echo wp_kses_post($this->render($args));
     }
     
     /**

@@ -1,4 +1,4 @@
-=== Praison AI SEO ===
+=== AI SEO ===
 Contributors: MervinPraison
 Tags: seo, ai, openai, schema, sitemap
 Requires at least: 5.0
@@ -12,7 +12,7 @@ AI-powered SEO optimization for WordPress. Generate meta descriptions, titles, s
 
 == Description ==
 
-Praison AI SEO is a powerful AI-powered SEO plugin that helps you optimize your WordPress content using OpenAI's GPT-4o-mini model. Automatically generate SEO-optimized meta titles, descriptions, schema markup, and get comprehensive content analysis.
+AI SEO is a powerful AI-powered SEO plugin that helps you optimize your WordPress content using OpenAI's GPT-4o-mini model. Automatically generate SEO-optimized titles and descriptions, schema markup, and get comprehensive content analysis.
 
 = Key Features =
 
@@ -90,7 +90,7 @@ This plugin connects to the OpenAI API to provide AI-powered SEO features.
 
 1. Log in to your WordPress admin panel
 2. Navigate to Plugins → Add New
-3. Search for "AISEO"
+3. Search for "AI SEO"
 4. Click "Install Now" and then "Activate"
 
 = Manual Installation =
@@ -103,7 +103,7 @@ This plugin connects to the OpenAI API to provide AI-powered SEO features.
 
 = Configuration =
 
-1. Navigate to Settings → AISEO
+1. Navigate to Settings → AI SEO
 2. Enter your OpenAI API key (get one at https://platform.openai.com/api-keys)
 3. Click "Save Changes"
 4. Start optimizing your content!
@@ -123,7 +123,7 @@ The plugin itself is free. You only pay for OpenAI API usage:
 
 = Does it work with other SEO plugins? =
 
-Yes! AISEO can import metadata from Yoast SEO, Rank Math, and All in One SEO. You can also export your AISEO data to JSON or CSV.
+Yes! AI SEO can import metadata from Yoast SEO, Rank Math, and All in One SEO. You can also export your AI SEO data to JSON or CSV.
 
 = Is my data sent to OpenAI? =
 
@@ -131,19 +131,19 @@ Only when you explicitly use AI generation features. The plugin does not automat
 
 = Does it support WP-CLI? =
 
-Yes! AISEO includes 70+ WP-CLI commands for automation and batch processing. Perfect for large sites and developers.
+Yes! AI SEO includes 70+ WP-CLI commands for automation and batch processing. Perfect for large sites and developers.
 
 = Does it have a REST API? =
 
-Yes! AISEO provides 60+ REST API endpoints for all features. Perfect for headless WordPress, mobile apps, and custom integrations.
+Yes! AI SEO provides 60+ REST API endpoints for all features. Perfect for headless WordPress, mobile apps, and custom integrations.
 
 = Can I use it with custom post types? =
 
-Yes! AISEO supports all custom post types. You can enable/disable SEO features for any post type.
+Yes! AI SEO supports all custom post types. You can enable/disable SEO features for any post type.
 
 = Does it support multilingual sites? =
 
-Yes! AISEO is compatible with WPML, Polylang, and TranslatePress. It can sync metadata across translations.
+Yes! AI SEO is compatible with WPML, Polylang, and TranslatePress. It can sync metadata across translations.
 
 = How do I get support? =
 
@@ -165,7 +165,7 @@ Yes! AISEO is compatible with WPML, Polylang, and TranslatePress. It can sync me
 == Changelog ==
 
 = 1.0.0 =
-* Initial release
+* Initial release of AI SEO - AI-Powered SEO Plugin.
 * AI-powered meta title and description generation
 * Content analysis engine with 11 SEO metrics
 * Schema markup generator (Article, BlogPosting, WebPage, FAQ, HowTo)
@@ -195,45 +195,6 @@ Yes! AISEO is compatible with WPML, Polylang, and TranslatePress. It can sync me
 * Structured logging and monitoring
 * Performance optimizations
 
-== Changelog ==
-
-= 5.0.5 =
-* Improved publishing workflow
-
-= 5.0.4 =
-* Add publish.sh script for automated WordPress.org publishing
-
-= 5.0.3 =
-* Update plugin name to Praison AI SEO
-
-= 5.0.2 =
-* Add seo-wordpress.php for WordPress.org compatibility
-* Unified repository for both AISEO and seo-wordpress plugins
-
-= 5.0.1 =
-* Fix: Limit to 5 tags as required by WordPress.org
-
-= 5.0.0 =
-* Complete rewrite with modern architecture
-* Added REST API with 60+ endpoints
-* Added WP-CLI support with 70+ commands
-* Added Homepage SEO settings (title, description, keywords)
-* Added Taxonomy SEO (categories, tags, custom taxonomies)
-* Added Webmaster Verification (Google, Bing, Yandex, Pinterest, Baidu)
-* Added Google Analytics integration (GA4 support)
-* Added Title Templates with placeholders
-* Added Global Robots Settings (noindex/nofollow)
-* Added Visual Breadcrumbs with shortcode and schema markup
-* Added Legacy Sitemap URLs support (sitemap_index.xml, post-sitemap.xml)
-* Added RSS Feed Customization
-* Added Import from legacy Praison SEO plugin
-* Improved AI-powered content generation
-* Enhanced schema markup support
-* Better performance with caching system
-
-= 4.0.18 =
-* Previous version (legacy Praison SEO)
-
 == Upgrade Notice ==
 
 = 5.0.0 =
@@ -241,7 +202,7 @@ Major update! Complete rewrite with modern architecture, REST API, WP-CLI suppor
 
 == Privacy Policy ==
 
-This plugin does not collect or store any personal data on our servers. All data remains on your WordPress installation.
+AI SEO does not collect or store any personal data on our servers. All data remains on your WordPress installation.
 
 When you use AI-powered features, the plugin sends content to OpenAI's API. Please review OpenAI's privacy policy at https://openai.com/policies/privacy-policy.
 

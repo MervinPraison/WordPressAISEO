@@ -839,7 +839,7 @@ class AISEO_API {
      */
     private function prepare_image_for_vision($image_url) {
         // Check if URL is local or inaccessible
-        $parsed_url = parse_url($image_url);
+        $parsed_url = wp_parse_url($image_url);
         $is_local = false;
         
         if (isset($parsed_url['host'])) {
