@@ -205,10 +205,13 @@ class AISEO_Advanced_Analysis {
         $density = ($keyword_count / $word_count) * 100;
         
         if ($density >= 0.5 && $density <= 2.5) {
+            /* translators: %.2f: keyword density percentage */
             return ['score' => 10, 'max_score' => 10, 'status' => 'good', 'message' => sprintf(__('Keyword density is optimal (%.2f%%)', 'aiseo'), $density)];
         } else if ($density > 2.5) {
+            /* translators: %.2f: keyword density percentage */
             return ['score' => 5, 'max_score' => 10, 'status' => 'ok', 'message' => sprintf(__('Keyword density too high (%.2f%%). Risk of keyword stuffing.', 'aiseo'), $density)];
         } else {
+            /* translators: %.2f: keyword density percentage */
             return ['score' => 5, 'max_score' => 10, 'status' => 'ok', 'message' => sprintf(__('Keyword density low (%.2f%%). Consider using keyword more.', 'aiseo'), $density)];
         }
     }
@@ -221,12 +224,16 @@ class AISEO_Advanced_Analysis {
         $word_count = str_word_count($text);
         
         if ($word_count >= 1000) {
+            /* translators: %d: word count */
             return ['score' => 10, 'max_score' => 10, 'status' => 'good', 'message' => sprintf(__('Excellent content length (%d words)', 'aiseo'), $word_count)];
         } else if ($word_count >= 600) {
+            /* translators: %d: word count */
             return ['score' => 8, 'max_score' => 10, 'status' => 'good', 'message' => sprintf(__('Good content length (%d words)', 'aiseo'), $word_count)];
         } else if ($word_count >= 300) {
+            /* translators: %d: word count */
             return ['score' => 5, 'max_score' => 10, 'status' => 'ok', 'message' => sprintf(__('Acceptable content length (%d words)', 'aiseo'), $word_count)];
         } else {
+            /* translators: %d: word count */
             return ['score' => 0, 'max_score' => 10, 'status' => 'poor', 'message' => sprintf(__('Content too short (%d words). Aim for 300+.', 'aiseo'), $word_count)];
         }
     }
@@ -257,10 +264,13 @@ class AISEO_Advanced_Analysis {
         $percentage = (count($sentences) > 0) ? ($passive_count / count($sentences)) * 100 : 0;
         
         if ($percentage < 10) {
+            /* translators: %.1f: passive voice percentage */
             return ['score' => 10, 'max_score' => 10, 'status' => 'good', 'message' => sprintf(__('Passive voice usage is good (%.1f%%)', 'aiseo'), $percentage)];
         } else if ($percentage < 20) {
+            /* translators: %.1f: passive voice percentage */
             return ['score' => 5, 'max_score' => 10, 'status' => 'ok', 'message' => sprintf(__('Passive voice usage acceptable (%.1f%%)', 'aiseo'), $percentage)];
         } else {
+            /* translators: %.1f: passive voice percentage */
             return ['score' => 0, 'max_score' => 10, 'status' => 'poor', 'message' => sprintf(__('Too much passive voice (%.1f%%). Aim for <10%%.', 'aiseo'), $percentage)];
         }
     }
@@ -291,10 +301,13 @@ class AISEO_Advanced_Analysis {
         $percentage = (count($sentences) > 0) ? ($transition_count / count($sentences)) * 100 : 0;
         
         if ($percentage >= 30) {
+            /* translators: %.1f: transition words percentage */
             return ['score' => 10, 'max_score' => 10, 'status' => 'good', 'message' => sprintf(__('Good use of transition words (%.1f%%)', 'aiseo'), $percentage)];
         } else if ($percentage >= 20) {
+            /* translators: %.1f: transition words percentage */
             return ['score' => 5, 'max_score' => 10, 'status' => 'ok', 'message' => sprintf(__('Acceptable transition words (%.1f%%)', 'aiseo'), $percentage)];
         } else {
+            /* translators: %.1f: transition words percentage */
             return ['score' => 0, 'max_score' => 10, 'status' => 'poor', 'message' => sprintf(__('Not enough transition words (%.1f%%). Aim for 30%%+.', 'aiseo'), $percentage)];
         }
     }

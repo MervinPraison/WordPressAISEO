@@ -286,6 +286,7 @@ class AISEO_Image_SEO {
             $checks['alt_text_length'] = [
                 'score' => 10,
                 'status' => 'good',
+                /* translators: %d: number of characters in alt text */
                 'message' => sprintf(__('Alt text length is optimal (%d chars)', 'aiseo'), $alt_length)
             ];
         } else if ($alt_length > 0) {
@@ -293,6 +294,7 @@ class AISEO_Image_SEO {
             $checks['alt_text_length'] = [
                 'score' => 5,
                 'status' => 'ok',
+                /* translators: %d: number of characters in alt text */
                 'message' => sprintf(__('Alt text length could be improved (%d chars)', 'aiseo'), $alt_length)
             ];
         }
@@ -306,6 +308,7 @@ class AISEO_Image_SEO {
             $checks['keyword_in_alt'] = [
                 'score' => 20,
                 'status' => 'good',
+                /* translators: %s: focus keyword */
                 'message' => sprintf(__('Focus keyword "%s" found in alt text', 'aiseo'), $focus_keyword)
             ];
         }
@@ -342,6 +345,7 @@ class AISEO_Image_SEO {
             $checks['file_size'] = [
                 'score' => 20,
                 'status' => 'good',
+                /* translators: %.1f: file size in kilobytes */
                 'message' => sprintf(__('Image size is optimized (%.1f KB)', 'aiseo'), $filesize)
             ];
         } else if ($filesize < 200) {
@@ -349,6 +353,7 @@ class AISEO_Image_SEO {
             $checks['file_size'] = [
                 'score' => 10,
                 'status' => 'ok',
+                /* translators: %.1f: file size in kilobytes */
                 'message' => sprintf(__('Image size is acceptable (%.1f KB)', 'aiseo'), $filesize)
             ];
         }

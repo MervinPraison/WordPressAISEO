@@ -523,6 +523,7 @@ class AISEO_API {
                         continue 2; // Continue outer loop
                     }
                     
+                    /* translators: %s: field name */
                     return new WP_Error('missing_field', sprintf(__('Required field "%s" is missing', 'aiseo'), $field));
                 }
             }
@@ -970,6 +971,7 @@ class AISEO_API {
         if ($user_requests >= $rate_limit_per_minute) {
             $wait_seconds = 60 - (time() - (int)get_transient('aiseo_user_requests_start_' . $user_id));
             $wait_seconds = max(1, $wait_seconds);
+            /* translators: %d: number of seconds to wait */
             return new WP_Error('rate_limit', sprintf(__('Rate limit exceeded. Please wait %d seconds and try again.', 'aiseo'), $wait_seconds));
         }
         
@@ -1047,6 +1049,7 @@ class AISEO_API {
             case 504:
                 return __('OpenAI service temporarily unavailable', 'aiseo');
             default:
+                /* translators: %d: HTTP status code */
                 return sprintf(__('API error: %d', 'aiseo'), $status_code);
         }
     }

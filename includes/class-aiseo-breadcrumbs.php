@@ -340,6 +340,7 @@ class AISEO_Breadcrumbs {
         // Search
         if (is_search()) {
             $breadcrumbs[] = array(
+                /* translators: %s: search query */
                 'title' => sprintf(__('Search: %s', 'aiseo'), get_search_query()),
                 'url' => '',
                 'current' => true,

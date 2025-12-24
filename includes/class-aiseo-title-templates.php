@@ -244,6 +244,7 @@ class AISEO_Title_Templates {
         // Page number
         $page = get_query_var('paged', 0);
         if ($page > 1) {
+            /* translators: %d: page number */
             $replacements['%page%'] = sprintf(__('Page %d', 'aiseo'), $page);
         } else {
             $replacements['%page%'] = '';
