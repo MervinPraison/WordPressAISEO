@@ -45,20 +45,21 @@ if (file_exists(AISEO_PLUGIN_DIR . '.env')) {
         }
         
         if (strpos($aiseo_line, '=') !== false) {
-            list($aiseo_key, $aiseo_value) = explode('=', $aiseo_line, 2);
-            $aiseo_key = trim($aiseo_key);
-            $aiseo_value = trim($aiseo_value);
+            list($aiseo_env_key, $aiseo_env_val) = explode('=', $aiseo_line, 2);
+            $aiseo_env_key = trim($aiseo_env_key);
+            $aiseo_env_val = trim($aiseo_env_val);
             
             // Remove quotes if present
-            $aiseo_value = trim($aiseo_value, '"\'');
+            $aiseo_env_val = trim($aiseo_env_val, '"\'');
             
-            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound -- Dynamic constant from .env file
-            if (!defined($aiseo_key)) {
-                define($aiseo_key, $aiseo_value);
+            // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound -- Dynamic constant name from .env file, not a plugin global
+            if (!defined($aiseo_env_key)) {
+                define($aiseo_env_key, $aiseo_env_val);
             }
             
             // Also set as environment variable
-            putenv("$aiseo_key=$aiseo_value");
+            putenv("$aiseo_env_key=$aiseo_env_val");
+            // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound
         }
     }
 }

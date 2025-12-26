@@ -680,7 +680,7 @@ class AISEO_Admin {
             return;
         }
         
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verification
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- Nonce is being verified here
         $nonce = $_POST['nonce'];
         $nonce_check = wp_verify_nonce($nonce, 'aiseo_admin_nonce');
         
@@ -739,7 +739,7 @@ class AISEO_Admin {
             return;
         }
         
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verification
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- Nonce is being verified here
         $nonce = $_POST['nonce'];
         $nonce_check = wp_verify_nonce($nonce, 'aiseo_admin_nonce');
         
@@ -1101,10 +1101,10 @@ class AISEO_Admin {
         }
         
         // Get actual statistics from database
-        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for statistics
         $posts_with_meta_title = get_posts(array(
             'post_type' => 'any',
             'posts_per_page' => -1,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for statistics
             'meta_query' => array(
                 array(
                     'key' => '_aiseo_title',
@@ -1114,10 +1114,10 @@ class AISEO_Admin {
             'fields' => 'ids'
         ));
         
-        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for statistics
         $posts_with_meta_desc = get_posts(array(
             'post_type' => 'any',
             'posts_per_page' => -1,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for statistics
             'meta_query' => array(
                 array(
                     'key' => '_aiseo_description',
@@ -1127,10 +1127,10 @@ class AISEO_Admin {
             'fields' => 'ids'
         ));
         
-        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for statistics
         $posts_with_keyword = get_posts(array(
             'post_type' => 'any',
             'posts_per_page' => -1,
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Required for statistics
             'meta_query' => array(
                 array(
                     'key' => '_aiseo_focus_keyword',

@@ -1064,14 +1064,13 @@ class AISEO_API {
     private function log_usage($success, $tokens_used, $duration) {
         global $wpdb;
         
-        $table_name = $wpdb->prefix . 'aiseo_usage_stats';
         $date = current_time('Y-m-d');
         $request_type = 'generate_content';
         
         // Check if record exists for today
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table query, table name is safe
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
         $existing = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE date = %s AND request_type = %s",
+            "SELECT * FROM {$wpdb->prefix}aiseo_usage_stats WHERE date = %s AND request_type = %s",
             $date,
             $request_type
         ));
@@ -1080,7 +1079,7 @@ class AISEO_API {
             // Update existing record
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table, no WP equivalent
             $wpdb->update(
-                $table_name,
+                $wpdb->prefix . 'aiseo_usage_stats',
                 array(
                     'requests_count' => $existing->requests_count + 1,
                     'tokens_used' => $existing->tokens_used + $tokens_used,
@@ -1096,7 +1095,7 @@ class AISEO_API {
             // Insert new record
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table, no WP equivalent
             $wpdb->insert(
-                $table_name,
+                $wpdb->prefix . 'aiseo_usage_stats',
                 array(
                     'date' => $date,
                     'request_type' => $request_type,

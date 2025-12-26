@@ -381,16 +381,17 @@ class AISEO_Post_Creator_CLI {
         $limit = WP_CLI\Utils\get_flag_value($assoc_args, 'limit', 20);
         $format = WP_CLI\Utils\get_flag_value($assoc_args, 'format', 'table');
         
+        // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required for listing AI-generated posts
         $query_args = array(
             'post_type' => $post_type,
             'post_status' => $post_status,
             'posts_per_page' => $limit,
-            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required for listing AI-generated posts
             'meta_key' => '_aiseo_ai_generated_post',
             'meta_value' => '1',
             'orderby' => 'date',
             'order' => 'DESC',
         );
+        // phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
         
         $posts = get_posts($query_args);
         

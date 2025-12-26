@@ -159,20 +159,26 @@ class AISEO_Rank_Tracker {
      */
     public function get_position_history($keyword, $days = 30) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'aiseo_rank_tracking';
         
         $date_from = gmdate('Y-m-d', strtotime("-{$days} days"));
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, table name is safe
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT position, url, date, location, serp_features 
-             FROM {$table_name} 
-             WHERE keyword = %s 
-             AND DATE(date) >= %s 
-             ORDER BY date ASC",
-            $keyword,
-            $date_from
-        ), ARRAY_A);
+        // Cache key for this query
+        $cache_key = 'aiseo_pos_history_' . md5( $keyword . $days );
+        $results = wp_cache_get( $cache_key, 'aiseo' );
+        
+        if ( false === $results ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table requires direct query
+            $results = $wpdb->get_results($wpdb->prepare(
+                "SELECT position, url, date, location, serp_features 
+                 FROM {$wpdb->prefix}aiseo_rank_tracking 
+                 WHERE keyword = %s 
+                 AND DATE(date) >= %s 
+                 ORDER BY date ASC",
+                $keyword,
+                $date_from
+            ), ARRAY_A);
+            wp_cache_set( $cache_key, $results, 'aiseo', 300 );
+        }
         
         if (empty($results)) {
             return [];
@@ -194,26 +200,31 @@ class AISEO_Rank_Tracker {
      */
     public function get_ranking_keywords($post_id) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'aiseo_rank_tracking';
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, table name is safe
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT DISTINCT keyword, 
-                    (SELECT position FROM {$table_name} rt2 
-                     WHERE rt2.keyword = rt1.keyword 
-                     AND rt2.post_id = %d 
-                     ORDER BY date DESC LIMIT 1) as current_position,
-                    (SELECT date FROM {$table_name} rt3 
-                     WHERE rt3.keyword = rt1.keyword 
-                     AND rt3.post_id = %d 
-                     ORDER BY date DESC LIMIT 1) as last_checked
-             FROM {$table_name} rt1 
-             WHERE post_id = %d 
-             GROUP BY keyword",
-            $post_id,
-            $post_id,
-            $post_id
-        ), ARRAY_A);
+        $cache_key = 'aiseo_rank_keywords_' . absint( $post_id );
+        $results = wp_cache_get( $cache_key, 'aiseo' );
+        
+        if ( false === $results ) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table requires direct query
+            $results = $wpdb->get_results($wpdb->prepare(
+                "SELECT DISTINCT keyword, 
+                        (SELECT position FROM {$wpdb->prefix}aiseo_rank_tracking rt2 
+                         WHERE rt2.keyword = rt1.keyword 
+                         AND rt2.post_id = %d 
+                         ORDER BY date DESC LIMIT 1) as current_position,
+                        (SELECT date FROM {$wpdb->prefix}aiseo_rank_tracking rt3 
+                         WHERE rt3.keyword = rt1.keyword 
+                         AND rt3.post_id = %d 
+                         ORDER BY date DESC LIMIT 1) as last_checked
+                 FROM {$wpdb->prefix}aiseo_rank_tracking rt1 
+                 WHERE post_id = %d 
+                 GROUP BY keyword",
+                $post_id,
+                $post_id,
+                $post_id
+            ), ARRAY_A);
+            wp_cache_set( $cache_key, $results, 'aiseo', 300 );
+        }
         
         return $results ?: [];
     }
@@ -227,16 +238,15 @@ class AISEO_Rank_Tracker {
      */
     public function compare_with_competitor($keyword, $competitor_url) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'aiseo_rank_tracking';
         
         if (empty($keyword) || empty($competitor_url)) {
             return new WP_Error('invalid_params', 'Keyword and competitor URL are required');
         }
         
         // Get our latest position
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is prefixed, query uses $wpdb->prepare()
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table requires direct query
         $our_position = $wpdb->get_var($wpdb->prepare(
-            "SELECT position FROM {$table_name} 
+            "SELECT position FROM {$wpdb->prefix}aiseo_rank_tracking 
              WHERE keyword = %s 
              ORDER BY date DESC LIMIT 1",
             $keyword
@@ -425,67 +435,67 @@ class AISEO_Rank_Tracker {
      */
     public function get_summary() {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'aiseo_rank_tracking';
         
-        $summary = [
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
-            'total_keywords' => 0,
-            'total_tracking_records' => 0,
-            'average_position' => 0,
-            'top_10_keywords' => 0,
-            'top_3_keywords' => 0,
-            'position_1_keywords' => 0,
-            'tracked_posts' => 0,
-            'locations' => []
-        ];
+        $cache_key = 'aiseo_rank_summary';
+        $summary = wp_cache_get( $cache_key, 'aiseo' );
         
-        // Total tracking records
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
-        $summary['total_tracking_records'] = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
-        
-        // Total unique keywords
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
-        $summary['total_keywords'] = $wpdb->get_var("SELECT COUNT(DISTINCT keyword) FROM {$table_name}");
-        
-        // Tracked posts
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
-        $summary['tracked_posts'] = $wpdb->get_var("SELECT COUNT(DISTINCT post_id) FROM {$table_name} WHERE post_id > 0");
-        
-        // Get latest positions for all keywords
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, complex subquery
-        $latest_positions = $wpdb->get_results(
-            "SELECT DISTINCT keyword, 
-             (SELECT position FROM {$table_name} rt2 
-              WHERE rt2.keyword = rt1.keyword 
-              ORDER BY date DESC LIMIT 1) as position
-             FROM {$table_name} rt1",
-            ARRAY_A
-        );
-        
-        if (!empty($latest_positions)) {
-            $total_position = 0;
-            foreach ($latest_positions as $kw) {
-                $position = absint($kw['position']);
-                $total_position += $position;
+        if ( false === $summary ) {
+            $summary = [
+                'total_keywords' => 0,
+                'total_tracking_records' => 0,
+                'average_position' => 0,
+                'top_10_keywords' => 0,
+                'top_3_keywords' => 0,
+                'position_1_keywords' => 0,
+                'tracked_posts' => 0,
+                'locations' => []
+            ];
+            
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
+            $summary['total_tracking_records'] = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}aiseo_rank_tracking" );
+            
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
+            $summary['total_keywords'] = $wpdb->get_var( "SELECT COUNT(DISTINCT keyword) FROM {$wpdb->prefix}aiseo_rank_tracking" );
+            
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
+            $summary['tracked_posts'] = $wpdb->get_var( "SELECT COUNT(DISTINCT post_id) FROM {$wpdb->prefix}aiseo_rank_tracking WHERE post_id > 0" );
+            
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, complex subquery
+            $latest_positions = $wpdb->get_results(
+                "SELECT DISTINCT keyword, 
+                 (SELECT position FROM {$wpdb->prefix}aiseo_rank_tracking rt2 
+                  WHERE rt2.keyword = rt1.keyword 
+                  ORDER BY date DESC LIMIT 1) as position
+                 FROM {$wpdb->prefix}aiseo_rank_tracking rt1",
+                ARRAY_A
+            );
+            
+            if (!empty($latest_positions)) {
+                $total_position = 0;
+                foreach ($latest_positions as $kw) {
+                    $position = absint($kw['position']);
+                    $total_position += $position;
+                    
+                    if ($position <= 10) {
+                        $summary['top_10_keywords']++;
+                    }
+                    if ($position <= 3) {
+                        $summary['top_3_keywords']++;
+                    }
+                    if ($position === 1) {
+                        $summary['position_1_keywords']++;
+                    }
+                }
                 
-                if ($position <= 10) {
-                    $summary['top_10_keywords']++;
-                }
-                if ($position <= 3) {
-                    $summary['top_3_keywords']++;
-                }
-                if ($position === 1) {
-                    $summary['position_1_keywords']++;
-                }
+                $summary['average_position'] = round($total_position / count($latest_positions), 1);
             }
             
-            $summary['average_position'] = round($total_position / count($latest_positions), 1);
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
+            $locations = $wpdb->get_col( "SELECT DISTINCT location FROM {$wpdb->prefix}aiseo_rank_tracking" );
+            $summary['locations'] = $locations ?: [];
+            
+            wp_cache_set( $cache_key, $summary, 'aiseo', 300 );
         }
-        
-        // Get locations
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
-        $locations = $wpdb->get_col("SELECT DISTINCT location FROM {$table_name}");
-        $summary['locations'] = $locations ?: [];
         
         return $summary;
     }
