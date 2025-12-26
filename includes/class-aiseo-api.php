@@ -1069,9 +1069,9 @@ class AISEO_API {
         $request_type = 'generate_content';
         
         // Check if record exists for today
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table query
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table query, table name is safe
         $existing = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM $table_name WHERE date = %s AND request_type = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            "SELECT * FROM $table_name WHERE date = %s AND request_type = %s",
             $date,
             $request_type
         ));

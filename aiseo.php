@@ -24,11 +24,9 @@ define('AISEO_VERSION', '5.0.6');
 
 // CRITICAL FIX: Register AJAX actions IMMEDIATELY, before any hooks
 if (is_admin() && defined('DOING_AJAX') && DOING_AJAX) {
-    error_log('🔴 EARLY AJAX REGISTRATION - Loading admin class NOW');
     require_once dirname(__FILE__) . '/admin/class-aiseo-admin.php';
     if (class_exists('AISEO_Admin')) {
         new AISEO_Admin();
-        error_log('🔴 EARLY AJAX REGISTRATION - Admin class instantiated');
     }
 }
 define('AISEO_PLUGIN_FILE', __FILE__);
@@ -37,29 +35,30 @@ define('AISEO_PLUGIN_URL', function_exists('plugin_dir_url') ? plugin_dir_url(__
 
 // Load .env file if it exists
 if (file_exists(AISEO_PLUGIN_DIR . '.env')) {
-    $env_file = file_get_contents(AISEO_PLUGIN_DIR . '.env');
-    $env_lines = explode("\n", $env_file);
+    $aiseo_env_file = file_get_contents(AISEO_PLUGIN_DIR . '.env');
+    $aiseo_env_lines = explode("\n", $aiseo_env_file);
     
-    foreach ($env_lines as $line) {
-        $line = trim($line);
-        if (empty($line) || strpos($line, '#') === 0) {
+    foreach ($aiseo_env_lines as $aiseo_line) {
+        $aiseo_line = trim($aiseo_line);
+        if (empty($aiseo_line) || strpos($aiseo_line, '#') === 0) {
             continue;
         }
         
-        if (strpos($line, '=') !== false) {
-            list($key, $value) = explode('=', $line, 2);
-            $key = trim($key);
-            $value = trim($value);
+        if (strpos($aiseo_line, '=') !== false) {
+            list($aiseo_key, $aiseo_value) = explode('=', $aiseo_line, 2);
+            $aiseo_key = trim($aiseo_key);
+            $aiseo_value = trim($aiseo_value);
             
             // Remove quotes if present
-            $value = trim($value, '"\'');
+            $aiseo_value = trim($aiseo_value, '"\'');
             
-            if (!defined($key)) {
-                define($key, $value);
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound -- Dynamic constant from .env file
+            if (!defined($aiseo_key)) {
+                define($aiseo_key, $aiseo_value);
             }
             
             // Also set as environment variable
-            putenv("$key=$value");
+            putenv("$aiseo_key=$aiseo_value");
         }
     }
 }
@@ -292,14 +291,10 @@ function aiseo_init() {
     
     // Initialize admin interface
     if (is_admin() && file_exists(AISEO_PLUGIN_DIR . 'admin/class-aiseo-admin.php')) {
-        error_log('🟢 Loading AISEO_Admin class (is_admin: YES, DOING_AJAX: ' . (defined('DOING_AJAX') && DOING_AJAX ? 'YES' : 'NO') . ')');
         require_once AISEO_PLUGIN_DIR . 'admin/class-aiseo-admin.php';
         if (class_exists('AISEO_Admin')) {
-            error_log('🟢 Instantiating AISEO_Admin class');
             new AISEO_Admin();
         }
-    } else {
-        error_log('❌ NOT loading AISEO_Admin (is_admin: ' . (is_admin() ? 'YES' : 'NO') . ', file_exists: ' . (file_exists(AISEO_PLUGIN_DIR . 'admin/class-aiseo-admin.php') ? 'YES' : 'NO') . ')');
     }
 }
 add_action('init', 'aiseo_init', 1); // Priority 1 to run early

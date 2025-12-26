@@ -163,7 +163,7 @@ class AISEO_Rank_Tracker {
         
         $date_from = gmdate('Y-m-d', strtotime("-{$days} days"));
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, table name is safe
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT position, url, date, location, serp_features 
              FROM {$table_name} 
@@ -196,7 +196,7 @@ class AISEO_Rank_Tracker {
         global $wpdb;
         $table_name = $wpdb->prefix . 'aiseo_rank_tracking';
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, table name is safe
         $results = $wpdb->get_results($wpdb->prepare(
             "SELECT DISTINCT keyword, 
                     (SELECT position FROM {$table_name} rt2 
@@ -234,7 +234,7 @@ class AISEO_Rank_Tracker {
         }
         
         // Get our latest position
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is prefixed, query uses $wpdb->prepare()
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name is prefixed, query uses $wpdb->prepare()
         $our_position = $wpdb->get_var($wpdb->prepare(
             "SELECT position FROM {$table_name} 
              WHERE keyword = %s 
@@ -375,10 +375,10 @@ class AISEO_Rank_Tracker {
                   ORDER BY last_checked DESC";
         
         if (!empty($params)) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared with $wpdb->prepare() and params
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query is prepared with $wpdb->prepare() and params
             $results = $wpdb->get_results($wpdb->prepare($query, ...$params), ARRAY_A);
         } else {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Query has no user input, table name is prefixed
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Query has no user input, table name is prefixed
             $results = $wpdb->get_results($query, ARRAY_A);
         }
         

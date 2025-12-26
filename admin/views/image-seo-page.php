@@ -30,8 +30,8 @@ if (!defined('ABSPATH')) {
                 <?php
                 global $wpdb;
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Counting AI-generated alt texts
-                $ai_generated = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = '_aiseo_ai_generated_alt' AND meta_value = '1'");
-                echo number_format($ai_generated);
+                $aiseo_ai_generated = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = '_aiseo_ai_generated_alt' AND meta_value = '1'");
+                echo esc_html(number_format($aiseo_ai_generated));
                 ?>
             </p>
         </div>
@@ -58,31 +58,31 @@ if (!defined('ABSPATH')) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($images as $image): ?>
-                    <tr data-image-id="<?php echo esc_attr($image->ID); ?>">
+                    <?php foreach ($images as $aiseo_image): ?>
+                    <tr data-image-id="<?php echo esc_attr($aiseo_image->ID); ?>">
                         <td>
-                            <input type="checkbox" class="image-checkbox" value="<?php echo esc_attr($image->ID); ?>">
+                            <input type="checkbox" class="image-checkbox" value="<?php echo esc_attr($aiseo_image->ID); ?>">
                         </td>
                         <td>
-                            <?php if ($image->thumbnail): ?>
-                                <img src="<?php echo esc_url($image->thumbnail); ?>" alt="" style="width: 60px; height: 60px; object-fit: cover;">
+                            <?php if ($aiseo_image->thumbnail): ?>
+                                <img src="<?php echo esc_url($aiseo_image->thumbnail); ?>" alt="" style="width: 60px; height: 60px; object-fit: cover;">
                             <?php endif; ?>
                         </td>
                         <td>
-                            <strong><?php echo esc_html(basename($image->guid)); ?></strong>
+                            <strong><?php echo esc_html(basename($aiseo_image->guid)); ?></strong>
                         </td>
                         <td>
-                            <?php if ($image->post_parent > 0): ?>
-                                <a href="<?php echo esc_url($image->parent_url); ?>" target="_blank">
-                                    <?php echo esc_html($image->parent_title); ?>
+                            <?php if ($aiseo_image->post_parent > 0): ?>
+                                <a href="<?php echo esc_url($aiseo_image->parent_url); ?>" target="_blank">
+                                    <?php echo esc_html($aiseo_image->parent_title); ?>
                                 </a>
                             <?php else: ?>
                                 <em><?php esc_html_e('Not attached', 'aiseo'); ?></em>
                             <?php endif; ?>
                         </td>
-                        <td><?php echo esc_html($image->filesize); ?></td>
+                        <td><?php echo esc_html($aiseo_image->filesize); ?></td>
                         <td>
-                            <button class="button aiseo-generate-single-alt" data-image-id="<?php echo esc_attr($image->ID); ?>">
+                            <button class="button aiseo-generate-single-alt" data-image-id="<?php echo esc_attr($aiseo_image->ID); ?>">
                                 <?php esc_html_e('Generate Alt Text', 'aiseo'); ?>
                             </button>
                             <span class="spinner"></span>

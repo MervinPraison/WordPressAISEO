@@ -511,11 +511,13 @@ class AISEO_Post_Creator {
         );
         
         // Get total AI-generated posts
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Statistics query
         $stats['total_ai_posts'] = $wpdb->get_var(
             "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = '_aiseo_ai_generated_post' AND meta_value = '1'"
         );
         
         // Get posts by status
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Statistics query
         $status_query = $wpdb->get_results(
             "SELECT p.post_status, COUNT(*) as count 
              FROM {$wpdb->posts} p
@@ -529,6 +531,7 @@ class AISEO_Post_Creator {
         }
         
         // Get posts by type
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Statistics query
         $type_query = $wpdb->get_results(
             "SELECT p.post_type, COUNT(*) as count 
              FROM {$wpdb->posts} p
@@ -542,6 +545,7 @@ class AISEO_Post_Creator {
         }
         
         // Get recent posts
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Statistics query
         $recent_posts = $wpdb->get_results(
             "SELECT p.ID, p.post_title, p.post_status, p.post_type, pm.meta_value as created_at
              FROM {$wpdb->posts} p

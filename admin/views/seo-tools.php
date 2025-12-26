@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Get recent posts for selection
-$recent_posts = wp_get_recent_posts(array(
+$aiseo_recent_posts = wp_get_recent_posts(array(
     'numberposts' => 20,
     'post_status' => 'publish,draft',
 ));
@@ -272,7 +272,7 @@ $recent_posts = wp_get_recent_posts(array(
 
 <script>
 // Ensure ajaxurl is defined
-var ajaxurl = ajaxurl || '<?php echo admin_url('admin-ajax.php'); ?>';
+var ajaxurl = ajaxurl || '<?php echo esc_url(admin_url('admin-ajax.php')); ?>';
 
 jQuery(document).ready(function($) {
     // Clear refresh flag on page load (prevents infinite loops)
@@ -296,12 +296,12 @@ jQuery(document).ready(function($) {
         console.log('🔴 SEO TOOLS - AJAX REQUEST STARTING');
         console.log('========================================');
         console.log('Timestamp:', new Date().toISOString());
-        console.log('Page loaded at: <?php echo current_time('Y-m-d H:i:s'); ?>');
+        console.log('Page loaded at: <?php echo esc_js(current_time('Y-m-d H:i:s')); ?>');
         console.log('Field:', field);
         console.log('Post ID:', postId);
         console.log('Action:', 'aiseo_generate_' + field);
         console.log('AJAX URL:', ajaxurl);
-        console.log('User ID (PHP):', '<?php echo get_current_user_id(); ?>');
+        console.log('User ID (PHP):', '<?php echo esc_js(get_current_user_id()); ?>');
         console.log('---');
         console.log('aiseoAdmin object:', aiseoAdmin);
         console.log('aiseoAdmin.nonce:', aiseoAdmin ? aiseoAdmin.nonce : 'UNDEFINED');

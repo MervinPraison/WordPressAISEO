@@ -9,7 +9,7 @@
 if (!defined('ABSPATH')) exit;
 
 // Get all posts for bulk selection
-$all_posts = get_posts(array(
+$aiseo_all_posts = get_posts(array(
     'numberposts' => 100,
     'post_type' => array('post', 'page'),
     'post_status' => 'any',

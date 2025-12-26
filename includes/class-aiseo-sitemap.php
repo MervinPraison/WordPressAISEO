@@ -221,6 +221,7 @@ class AISEO_Sitemap {
             'posts_per_page' => 1,
             'orderby' => 'modified',
             'order' => 'DESC',
+            // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- Required for taxonomy sitemap
             'tax_query' => array(
                 array(
                     'taxonomy' => $taxonomy,

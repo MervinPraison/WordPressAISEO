@@ -63,6 +63,7 @@ class AISEO_Importer {
         
         // Check for old plugin post meta
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Migration check
         $count = $wpdb->get_var(
             "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key LIKE '_praison_seo_%'"
         );
@@ -96,6 +97,7 @@ class AISEO_Importer {
         
         // Count post meta
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Migration preview
         $preview['post_meta_count'] = (int) $wpdb->get_var(
             "SELECT COUNT(DISTINCT post_id) FROM {$wpdb->postmeta} WHERE meta_key LIKE '_praison_seo_%'"
         );
@@ -260,6 +262,7 @@ class AISEO_Importer {
         );
         
         // Get all posts with old meta
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Migration import
         $post_ids = $wpdb->get_col(
             "SELECT DISTINCT post_id FROM {$wpdb->postmeta} WHERE meta_key LIKE '_praison_seo_%'"
         );
@@ -378,6 +381,7 @@ class AISEO_Importer {
         }
         
         // Delete old post meta
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Migration cleanup
         $deleted = $wpdb->query(
             "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_praison_seo_%'"
         );

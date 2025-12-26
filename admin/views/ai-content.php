@@ -11,15 +11,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$api_key = '';
+$aiseo_api_key = '';
 if (class_exists('AISEO_Helpers')) {
-    $api_key = AISEO_Helpers::get_api_key();
+    $aiseo_api_key = AISEO_Helpers::get_api_key();
 }
 ?>
 
 <div class="aiseo-ai-content">
     
-    <?php if (empty($api_key)): ?>
+    <?php if (empty($aiseo_api_key)): ?>
         <div class="aiseo-alert aiseo-alert-warning">
             <strong><?php esc_html_e('API Key Required', 'aiseo'); ?></strong>
             <?php esc_html_e('Please configure your OpenAI API key in Settings to use AI features.', 'aiseo'); ?>

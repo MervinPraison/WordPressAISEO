@@ -100,7 +100,7 @@ class AISEO_Redirects {
             $where .= $wpdb->prepare(' AND timestamp <= %s', $args['date_to']);
         }
         
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and dynamic WHERE/ORDER BY are safe, values are prepared
+        // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Table name from $wpdb->prefix is safe, values are prepared
         $query = $wpdb->prepare(
             "SELECT url, COUNT(*) as hits, MAX(timestamp) as last_hit, referrer
              FROM {$table_name}
@@ -112,8 +112,9 @@ class AISEO_Redirects {
             $args['offset']
         );
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared , WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Query is prepared above with $wpdb->prepare()
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- Query is prepared above
         $results = $wpdb->get_results($query, ARRAY_A);
+        // phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
         
         return [
             'errors' => $results,
@@ -442,7 +443,7 @@ class AISEO_Redirects {
             );
             
             // Perform redirect
-            wp_redirect($redirect['target_url'], (int) $redirect['redirect_type']);
+            wp_safe_redirect($redirect['target_url'], (int) $redirect['redirect_type']);
             exit;
         }
         
@@ -467,7 +468,7 @@ class AISEO_Redirects {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
         $total_hits = $wpdb->get_var("SELECT SUM(hits) FROM {$redirects_table}");
         
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table statistics, table name is safe
         $top_404s = $wpdb->get_results(
             "SELECT url, COUNT(*) as hits 
              FROM {$errors_table} 
@@ -476,7 +477,7 @@ class AISEO_Redirects {
              LIMIT 10",
             ARRAY_A
         );
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table statistics, table name is safe
         $top_redirects = $wpdb->get_results(
             "SELECT source_url, target_url, hits 
              FROM {$redirects_table} 

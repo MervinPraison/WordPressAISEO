@@ -177,7 +177,7 @@ class AISEO_Taxonomy_SEO {
     public function save_term_meta($term_id, $tt_id) {
         // Verify nonce
         if (!isset($_POST['aiseo_taxonomy_meta_nonce']) || 
-            !wp_verify_nonce($_POST['aiseo_taxonomy_meta_nonce'], 'aiseo_taxonomy_meta')) {
+            !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['aiseo_taxonomy_meta_nonce'])), 'aiseo_taxonomy_meta')) {
             return;
         }
         
@@ -206,19 +206,19 @@ class AISEO_Taxonomy_SEO {
         $meta = array();
         
         if (isset($_POST['aiseo_title'])) {
-            $meta['title'] = sanitize_text_field($_POST['aiseo_title']);
+            $meta['title'] = sanitize_text_field(wp_unslash($_POST['aiseo_title']));
         }
         
         if (isset($_POST['aiseo_description'])) {
-            $meta['description'] = sanitize_textarea_field($_POST['aiseo_description']);
+            $meta['description'] = sanitize_textarea_field(wp_unslash($_POST['aiseo_description']));
         }
         
         if (isset($_POST['aiseo_keywords'])) {
-            $meta['keywords'] = sanitize_text_field($_POST['aiseo_keywords']);
+            $meta['keywords'] = sanitize_text_field(wp_unslash($_POST['aiseo_keywords']));
         }
         
         if (isset($_POST['aiseo_canonical'])) {
-            $meta['canonical'] = esc_url_raw($_POST['aiseo_canonical']);
+            $meta['canonical'] = esc_url_raw(wp_unslash($_POST['aiseo_canonical']));
         }
         
         $meta['noindex'] = isset($_POST['aiseo_noindex']) ? true : false;

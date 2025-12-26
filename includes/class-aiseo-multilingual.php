@@ -191,7 +191,9 @@ class AISEO_Multilingual {
         }
         
         $post_type = get_post_type($post_id);
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML filter hook
         $trid = apply_filters('wpml_element_trid', null, $post_id, 'post_' . $post_type);
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML filter hook
         $translations_data = apply_filters('wpml_get_element_translations', null, $trid, 'post_' . $post_type);
         
         $translations = [];
@@ -299,6 +301,7 @@ class AISEO_Multilingual {
     public function get_default_language() {
         switch ($this->active_plugin) {
             case 'wpml':
+                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML filter hook
                 return apply_filters('wpml_default_language', null);
             case 'polylang':
                 return pll_default_language();

@@ -149,7 +149,7 @@ if (!defined('ABSPATH')) exit;
 
 <script>
 // Ensure ajaxurl is defined
-var ajaxurl = ajaxurl || '<?php echo admin_url('admin-ajax.php'); ?>';
+var ajaxurl = ajaxurl || '<?php echo esc_url(admin_url('admin-ajax.php')); ?>';
 
 jQuery(document).ready(function($) {
     // Clear refresh flag on page load (prevents infinite loops)

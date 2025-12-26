@@ -8,7 +8,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-$post_types = get_post_types(array('public' => true), 'objects');
+$aiseo_post_types = get_post_types(array('public' => true), 'objects');
 ?>
 
 <div class="aiseo-advanced">

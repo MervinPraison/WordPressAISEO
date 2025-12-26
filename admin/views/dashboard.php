@@ -12,19 +12,19 @@ if (!defined('ABSPATH')) {
 }
 
 // Get statistics
-$api_key = AISEO_Helpers::get_api_key();
-$posts_analyzed = get_option('aiseo_posts_analyzed_count', 0);
-$metadata_generated = get_option('aiseo_metadata_generated_count', 0);
-$ai_posts_created = 0;
+$aiseo_api_key = AISEO_Helpers::get_api_key();
+$aiseo_posts_analyzed = get_option('aiseo_posts_analyzed_count', 0);
+$aiseo_metadata_generated = get_option('aiseo_metadata_generated_count', 0);
+$aiseo_ai_posts_created = 0;
 
 if (class_exists('AISEO_Post_Creator')) {
-    $creator = new AISEO_Post_Creator();
-    $stats = $creator->get_statistics();
-    $ai_posts_created = isset($stats['total_ai_posts']) ? $stats['total_ai_posts'] : 0;
+    $aiseo_creator = new AISEO_Post_Creator();
+    $aiseo_stats = $aiseo_creator->get_statistics();
+    $aiseo_ai_posts_created = isset($aiseo_stats['total_ai_posts']) ? $aiseo_stats['total_ai_posts'] : 0;
 }
 
 // Get recent activity
-$recent_posts = wp_get_recent_posts(array(
+$aiseo_recent_posts = wp_get_recent_posts(array(
     'numberposts' => 5,
     'post_status' => 'any',
 ));
@@ -42,7 +42,7 @@ $recent_posts = wp_get_recent_posts(array(
                 <?php esc_html_e('API Status', 'aiseo'); ?>
             </h3>
             <div class="aiseo-widget-body">
-                <?php if (!empty($api_key)): ?>
+                <?php if (!empty($aiseo_api_key)): ?>
                     <p class="aiseo-alert aiseo-alert-success">
                         <strong><?php esc_html_e('API Key Configured', 'aiseo'); ?></strong><br>
                         <?php esc_html_e('Model:', 'aiseo'); ?> <code><?php echo esc_html(get_option('aiseo_model', 'gpt-4o-mini')); ?></code>
@@ -64,15 +64,15 @@ $recent_posts = wp_get_recent_posts(array(
             </h3>
             <div class="aiseo-stat-grid">
                 <div class="aiseo-stat-item">
-                    <div class="aiseo-stat-value"><?php echo esc_html($posts_analyzed); ?></div>
+                    <div class="aiseo-stat-value"><?php echo esc_html($aiseo_posts_analyzed); ?></div>
                     <div class="aiseo-stat-label"><?php esc_html_e('Posts Analyzed', 'aiseo'); ?></div>
                 </div>
                 <div class="aiseo-stat-item">
-                    <div class="aiseo-stat-value"><?php echo esc_html($metadata_generated); ?></div>
+                    <div class="aiseo-stat-value"><?php echo esc_html($aiseo_metadata_generated); ?></div>
                     <div class="aiseo-stat-label"><?php esc_html_e('Metadata Generated', 'aiseo'); ?></div>
                 </div>
                 <div class="aiseo-stat-item">
-                    <div class="aiseo-stat-value"><?php echo esc_html($ai_posts_created); ?></div>
+                    <div class="aiseo-stat-value"><?php echo esc_html($aiseo_ai_posts_created); ?></div>
                     <div class="aiseo-stat-label"><?php esc_html_e('AI Posts Created', 'aiseo'); ?></div>
                 </div>
             </div>
@@ -115,7 +115,7 @@ $recent_posts = wp_get_recent_posts(array(
             </h3>
         </div>
         <div class="aiseo-card-body">
-            <?php if (!empty($recent_posts)): ?>
+            <?php if (!empty($aiseo_recent_posts)): ?>
                 <table class="aiseo-table">
                     <thead>
                         <tr>
@@ -126,17 +126,17 @@ $recent_posts = wp_get_recent_posts(array(
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($recent_posts as $post): ?>
+                        <?php foreach ($aiseo_recent_posts as $aiseo_post): ?>
                             <tr>
-                                <td><strong><?php echo esc_html($post['post_title']); ?></strong></td>
+                                <td><strong><?php echo esc_html($aiseo_post['post_title']); ?></strong></td>
                                 <td>
-                                    <span class="aiseo-badge aiseo-badge-<?php echo esc_attr($post['post_status'] === 'publish' ? 'success' : 'warning'); ?>">
-                                        <?php echo esc_html(ucfirst($post['post_status'])); ?>
+                                    <span class="aiseo-badge aiseo-badge-<?php echo esc_attr($aiseo_post['post_status'] === 'publish' ? 'success' : 'warning'); ?>">
+                                        <?php echo esc_html(ucfirst($aiseo_post['post_status'])); ?>
                                     </span>
                                 </td>
-                                <td><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($post['post_date']))); ?></td>
+                                <td><?php echo esc_html(date_i18n(get_option('date_format'), strtotime($aiseo_post['post_date']))); ?></td>
                                 <td class="aiseo-table-actions">
-                                    <a href="<?php echo esc_url(get_edit_post_link($post['ID'])); ?>" class="button button-small">
+                                    <a href="<?php echo esc_url(get_edit_post_link($aiseo_post['ID'])); ?>" class="button button-small">
                                         <?php esc_html_e('Edit', 'aiseo'); ?>
                                     </a>
                                 </td>
