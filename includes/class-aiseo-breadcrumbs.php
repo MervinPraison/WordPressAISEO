@@ -100,7 +100,7 @@ class AISEO_Breadcrumbs {
      * @param array $args Optional arguments
      */
     public function display($args = array()) {
-        echo wp_kses_post($this->render($args));
+        echo $this->render($args);
     }
     
     /**
@@ -340,7 +340,6 @@ class AISEO_Breadcrumbs {
         // Search
         if (is_search()) {
             $breadcrumbs[] = array(
-                /* translators: %s: search query */
                 'title' => sprintf(__('Search: %s', 'aiseo'), get_search_query()),
                 'url' => '',
                 'current' => true,

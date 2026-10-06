@@ -8,7 +8,7 @@
 
 if (!defined('ABSPATH')) exit;
 
-$aiseo_post_types = get_post_types(array('public' => true), 'objects');
+$post_types = get_post_types(array('public' => true), 'objects');
 ?>
 
 <div class="aiseo-advanced">
@@ -433,7 +433,6 @@ jQuery(document).ready(function($) {
                 nonce: aiseoAdmin.nonce
             },
             success: function(response) {
-                console.log('Brief Response:', response);
                 if (response.success && response.data) {
                     var brief = response.data;
                     var html = '<div class="content-brief">';
@@ -525,7 +524,6 @@ jQuery(document).ready(function($) {
                 length: 'medium'
             },
             success: function(response) {
-                console.log('Create Post from Brief Response:', response);
                 if (response.success) {
                     $btn.after('<div class="notice notice-success" style="margin:10px 0;padding:10px;"><strong>Success!</strong> Post created! <a href="' + response.data.edit_url + '" target="_blank">Edit post</a></div>');
                 } else {

@@ -8,11 +8,9 @@
     
     // Wait for DOM ready
     $(document).ready(function() {
-        console.log('AISEO Metabox: Script loaded');
         
         // Check if we're on the post editor
         if (!$('.aiseo-metabox').length) {
-            console.log('AISEO Metabox: Not on post editor page');
             return;
         }
         
@@ -70,7 +68,7 @@
                 url: ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'aiseo_generate_' + field,
+                    action: 'aiseo_metabox_generate_' + field,
                     post_id: postId,
                     nonce: $('#aiseo_metabox_nonce').val()
                 },
@@ -111,7 +109,7 @@
                 url: ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'aiseo_analyze_content',
+                    action: 'aiseo_metabox_analyze_content',
                     post_id: postId,
                     nonce: $('#aiseo_metabox_nonce').val()
                 },
@@ -188,7 +186,6 @@
             }, 500);
         });
         
-        console.log('AISEO Metabox: All event handlers initialized');
     });
     
 })(jQuery);

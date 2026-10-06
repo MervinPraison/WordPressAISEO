@@ -188,9 +188,8 @@ class AISEO_Post_Creator_CLI {
                 WP_CLI::error('Invalid JSON file');
             }
         } else {
-            // Parse CSV using WP_Filesystem
+            // Parse CSV
             $posts_data = array();
-            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- CLI context, WP_Filesystem not suitable for CSV parsing
             $handle = fopen($file, 'r');
             $headers = fgetcsv($handle);
             
@@ -201,7 +200,6 @@ class AISEO_Post_Creator_CLI {
                 }
                 $posts_data[] = $post;
             }
-            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- CLI context
             fclose($handle);
         }
         
@@ -381,7 +379,6 @@ class AISEO_Post_Creator_CLI {
         $limit = WP_CLI\Utils\get_flag_value($assoc_args, 'limit', 20);
         $format = WP_CLI\Utils\get_flag_value($assoc_args, 'format', 'table');
         
-        // phpcs:disable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Required for listing AI-generated posts
         $query_args = array(
             'post_type' => $post_type,
             'post_status' => $post_status,
@@ -391,7 +388,6 @@ class AISEO_Post_Creator_CLI {
             'orderby' => 'date',
             'order' => 'DESC',
         );
-        // phpcs:enable WordPress.DB.SlowDBQuery.slow_db_query_meta_key, WordPress.DB.SlowDBQuery.slow_db_query_meta_value
         
         $posts = get_posts($query_args);
         

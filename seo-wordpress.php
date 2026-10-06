@@ -3,7 +3,7 @@
  * Plugin Name: Praison AI SEO
  * Plugin URI: https://github.com/MervinPraison/WordPressAISEO
  * Description: AI-powered SEO optimization for WordPress. Automatically generate meta descriptions, titles, schema markup, and comprehensive SEO analysis using artificial intelligence.
- * Version: 5.0.6
+ * Version: 5.0.10
  * Author: MervinPraison
  * Author URI: https://mer.vin
  * License: GPL-2.0-or-later
@@ -20,15 +20,13 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('AISEO_VERSION', '5.0.6');
+define('AISEO_VERSION', '5.0.10');
 
-// CRITICAL FIX: Register AJAX actions IMMEDIATELY, before any hooks
+// Register AJAX actions immediately, before init hooks
 if (is_admin() && defined('DOING_AJAX') && DOING_AJAX) {
-    error_log('🔴 EARLY AJAX REGISTRATION - Loading admin class NOW');
     require_once dirname(__FILE__) . '/admin/class-aiseo-admin.php';
     if (class_exists('AISEO_Admin')) {
         new AISEO_Admin();
-        error_log('🔴 EARLY AJAX REGISTRATION - Admin class instantiated');
     }
 }
 define('AISEO_PLUGIN_FILE', __FILE__);
@@ -290,16 +288,12 @@ function aiseo_init() {
         $aiseo->init();
     }
     
-    // Initialize admin interface
+    // Initialize admin interface (wp-admin only; skipped for front-end and WP-CLI)
     if (is_admin() && file_exists(AISEO_PLUGIN_DIR . 'admin/class-aiseo-admin.php')) {
-        error_log('🟢 Loading AISEO_Admin class (is_admin: YES, DOING_AJAX: ' . (defined('DOING_AJAX') && DOING_AJAX ? 'YES' : 'NO') . ')');
         require_once AISEO_PLUGIN_DIR . 'admin/class-aiseo-admin.php';
         if (class_exists('AISEO_Admin')) {
-            error_log('🟢 Instantiating AISEO_Admin class');
             new AISEO_Admin();
         }
-    } else {
-        error_log('❌ NOT loading AISEO_Admin (is_admin: ' . (is_admin() ? 'YES' : 'NO') . ', file_exists: ' . (file_exists(AISEO_PLUGIN_DIR . 'admin/class-aiseo-admin.php') ? 'YES' : 'NO') . ')');
     }
 }
 add_action('init', 'aiseo_init', 1); // Priority 1 to run early

@@ -8,23 +8,6 @@
 (function($) {
     'use strict';
 
-    // 🔴 GLOBAL AJAX INTERCEPTOR - Logs ALL AJAX requests
-    $(document).ajaxSend(function(event, jqxhr, settings) {
-        // Only log AISEO actions
-        if (settings.data && settings.data.indexOf('aiseo_') !== -1) {
-            console.log('========================================');
-            console.log('🔴 GLOBAL AJAX INTERCEPTOR');
-            console.log('========================================');
-            console.log('Timestamp:', new Date().toISOString());
-            console.log('URL:', settings.url);
-            console.log('Type:', settings.type);
-            console.log('Data:', settings.data);
-            console.log('---');
-            console.log('aiseoAdmin.nonce:', aiseoAdmin ? aiseoAdmin.nonce : 'UNDEFINED');
-            console.log('========================================');
-        }
-    });
-
     // Global nonce management
     window.aiseoNonce = {
         current: aiseoAdmin.nonce,
@@ -62,7 +45,6 @@
                     if (response.success && response.data.nonce) {
                         this.current = response.data.nonce;
                         aiseoAdmin.nonce = response.data.nonce;
-                        console.log('AISEO: Nonce refreshed successfully');
                         if (callback) callback(this.current);
                     } else {
                         console.error('AISEO: Failed to refresh nonce');

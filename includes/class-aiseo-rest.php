@@ -28,14 +28,14 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/status', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_status'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Validate API key endpoint
         register_rest_route(self::NAMESPACE, '/validate-key', array(
             'methods' => 'GET',
             'callback' => array($this, 'validate_api_key'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Generate meta description endpoint
@@ -99,7 +99,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/generate/post/(?P<id>\d+)', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_post_metadata'),
-            'permission_callback' => array($this, 'check_permission'),
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -118,7 +118,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/schema/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_schema'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -138,7 +138,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/meta-tags/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_meta_tags'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -152,7 +152,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/social-tags/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_social_tags'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -166,14 +166,14 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/sitemap/stats', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_sitemap_stats'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Homepage SEO: Get settings
         register_rest_route(self::NAMESPACE, '/homepage-seo', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_homepage_seo'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Homepage SEO: Update settings
@@ -219,7 +219,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/taxonomy-seo/(?P<taxonomy>[a-z0-9_-]+)/(?P<term_id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_taxonomy_seo'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_term_permission'),
             'args' => array(
                 'taxonomy' => array(
                     'required' => true,
@@ -285,7 +285,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/taxonomy-seo/(?P<taxonomy>[a-z0-9_-]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'list_taxonomy_seo'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'taxonomy' => array(
                     'required' => true,
@@ -299,7 +299,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/webmaster-verification', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_webmaster_verification'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Webmaster Verification: Update codes
@@ -340,7 +340,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/analytics', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_analytics_settings'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Analytics: Update settings
@@ -377,7 +377,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/title-templates', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_title_templates'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Title Templates: Update templates
@@ -391,7 +391,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/robots-settings', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_robots_settings'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Robots Settings: Update settings
@@ -405,7 +405,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/breadcrumbs', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_breadcrumbs_settings'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Breadcrumbs: Update settings
@@ -419,7 +419,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/rss', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_rss_settings'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // RSS: Update settings
@@ -468,7 +468,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/image/generate-alt/(?P<id>\d+)', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_image_alt'),
-            'permission_callback' => array($this, 'check_permission'),
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -502,7 +502,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/image/seo-score/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_image_seo_score'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -516,7 +516,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/analyze/advanced/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'analyze_advanced'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -782,21 +782,21 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/multilingual/plugin', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_multilingual_plugin'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Multilingual: Get languages
         register_rest_route(self::NAMESPACE, '/multilingual/languages', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_multilingual_languages'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Multilingual: Get post translations
         register_rest_route(self::NAMESPACE, '/multilingual/translations/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_post_translations'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -809,7 +809,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/multilingual/hreflang/(?P<id>\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_hreflang_tags'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -822,7 +822,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/multilingual/sync/(?P<id>\d+)', array(
             'methods' => 'POST',
             'callback' => array($this, 'sync_multilingual_metadata'),
-            'permission_callback' => array($this, 'check_permission'),
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -840,21 +840,21 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/cpt/list', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_cpt_list'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // CPT: Get supported post types
         register_rest_route(self::NAMESPACE, '/cpt/supported', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_supported_cpt'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // CPT: Enable post type
         register_rest_route(self::NAMESPACE, '/cpt/enable', array(
             'methods' => 'POST',
             'callback' => array($this, 'enable_cpt'),
-            'permission_callback' => array($this, 'check_permission'),
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'post_type' => array(
                     'required' => true,
@@ -867,7 +867,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/cpt/disable', array(
             'methods' => 'POST',
             'callback' => array($this, 'disable_cpt'),
-            'permission_callback' => array($this, 'check_permission'),
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'post_type' => array(
                     'required' => true,
@@ -880,7 +880,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/cpt/posts/(?P<post_type>[a-zA-Z0-9_-]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_cpt_posts'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'post_type' => array(
                     'required' => true,
@@ -898,7 +898,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/cpt/stats/(?P<post_type>[a-zA-Z0-9_-]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_cpt_stats'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'post_type' => array(
                     'required' => true,
@@ -934,7 +934,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/competitor/list', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_competitors_list'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Competitor: Add competitor
@@ -985,7 +985,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/competitor/analysis/(?P<id>[a-zA-Z0-9_-]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_competitor_analysis'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -998,7 +998,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/competitor/compare/(?P<id>[a-zA-Z0-9_-]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'compare_competitor'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -1015,7 +1015,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/competitor/summary', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_competitor_summary'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Keyword Research: Get suggestions
@@ -1102,7 +1102,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/keyword/summary', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_keyword_summary'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Keyword Research: Clear cache
@@ -1116,7 +1116,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/backlink/list', array(
             'methods' => 'GET',
             'callback' => array($this, 'list_backlinks'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'status' => array(
                     'required' => false,
@@ -1179,7 +1179,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/backlink/new', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_new_backlinks'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'days' => array(
                     'required' => false,
@@ -1193,7 +1193,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/backlink/lost', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_lost_backlinks'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Backlink Monitoring: Generate disavow file
@@ -1220,7 +1220,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/backlink/summary', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_backlink_summary'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Rank Tracking: Track keyword
@@ -1249,7 +1249,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/rank/history/(?P<keyword>[^/]+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_rank_history'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'days' => array(
                     'required' => false,
@@ -1263,14 +1263,14 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/rank/keywords/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_ranking_keywords'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // Rank Tracking: Compare with competitor
         register_rest_route(self::NAMESPACE, '/rank/compare', array(
             'methods' => 'POST',
             'callback' => array($this, 'compare_rank'),
-            'permission_callback' => array($this, 'check_permission'),
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'keyword' => array(
                     'required' => true,
@@ -1300,7 +1300,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/rank/keywords', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_all_tracked_keywords'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'post_id' => array(
                     'required' => false,
@@ -1334,133 +1334,133 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/rank/summary', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_rank_summary'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Internal Linking: Get suggestions
         register_rest_route(self::NAMESPACE, '/internal-linking/suggestions/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_internal_linking_suggestions'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // Internal Linking: Detect orphans
         register_rest_route(self::NAMESPACE, '/internal-linking/orphans', array(
             'methods' => 'GET',
             'callback' => array($this, 'detect_orphan_pages'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Internal Linking: Analyze distribution
         register_rest_route(self::NAMESPACE, '/internal-linking/distribution/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'analyze_link_distribution'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // Internal Linking: Get opportunities
         register_rest_route(self::NAMESPACE, '/internal-linking/opportunities/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_link_opportunities'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // Content Suggestions: Get topic suggestions
         register_rest_route(self::NAMESPACE, '/content/topics', array(
             'methods' => 'POST',
             'callback' => array($this, 'get_content_topics'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Content Suggestions: Get optimization tips
         register_rest_route(self::NAMESPACE, '/content/optimize/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_optimization_tips'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // Content Suggestions: Get trending topics
         register_rest_route(self::NAMESPACE, '/content/trending', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_trending_topics'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Content Suggestions: Generate content brief
         register_rest_route(self::NAMESPACE, '/content/brief', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_content_brief'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Content Suggestions: Analyze content gaps
         register_rest_route(self::NAMESPACE, '/content/gaps', array(
             'methods' => 'POST',
             'callback' => array($this, 'analyze_content_gaps'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // 404 Monitor: Get 404 errors
         register_rest_route(self::NAMESPACE, '/404/errors', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_404_errors'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // 404 Monitor: Suggest redirect
         register_rest_route(self::NAMESPACE, '/404/suggest', array(
             'methods' => 'POST',
             'callback' => array($this, 'suggest_redirect'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Redirects: Create redirect
         register_rest_route(self::NAMESPACE, '/redirects/create', array(
             'methods' => 'POST',
             'callback' => array($this, 'create_redirect'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Redirects: Get all redirects
         register_rest_route(self::NAMESPACE, '/redirects/list', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_redirects'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Redirects: Delete redirect
         register_rest_route(self::NAMESPACE, '/redirects/delete/(?P<id>\\d+)', array(
             'methods' => 'DELETE',
             'callback' => array($this, 'delete_redirect'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Redirects: Bulk import
         register_rest_route(self::NAMESPACE, '/redirects/import', array(
             'methods' => 'POST',
             'callback' => array($this, 'import_redirects'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Redirects: Export
         register_rest_route(self::NAMESPACE, '/redirects/export', array(
             'methods' => 'GET',
             'callback' => array($this, 'export_redirects'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Redirects: Statistics
         register_rest_route(self::NAMESPACE, '/redirects/stats', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_redirect_stats'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
         ));
         
         // Permalink Optimization: Optimize permalink
         register_rest_route(self::NAMESPACE, '/permalink/optimize', array(
             'methods' => 'POST',
             'callback' => array($this, 'optimize_permalink'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'post_id' => array(
                     'required' => true,
@@ -1478,14 +1478,14 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/readability/analyze/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'analyze_readability'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // FAQ Generator: Generate FAQs
         register_rest_route(self::NAMESPACE, '/faq/generate/(?P<post_id>\\d+)', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_faqs'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'count' => array(
                     'required' => false,
@@ -1504,14 +1504,14 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/faq/get/(?P<post_id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'generate_faqs'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
         ));
         
         // Content Outline: Generate outline
         register_rest_route(self::NAMESPACE, '/outline/generate', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_outline'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'topic' => array(
                     'required' => true,
@@ -1541,7 +1541,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/rewrite/content', array(
             'methods' => 'POST',
             'callback' => array($this, 'rewrite_content'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_admin_permission'),
             'args' => array(
                 'content' => array(
                     'required' => true,
@@ -1563,7 +1563,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/meta/variations/(?P<post_id>\\d+)', array(
             'methods' => 'POST',
             'callback' => array($this, 'generate_meta_variations'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'count' => array(
                     'required' => false,
@@ -1582,7 +1582,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/report/unified/(?P<id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_unified_report'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -1601,7 +1601,7 @@ class AISEO_REST {
         register_rest_route(self::NAMESPACE, '/report/history/(?P<id>\\d+)', array(
             'methods' => 'GET',
             'callback' => array($this, 'get_report_history'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'check_edit_post_permission'),
             'args' => array(
                 'id' => array(
                     'required' => true,
@@ -1885,10 +1885,93 @@ class AISEO_REST {
     /**
      * Check admin permission
      *
-     * @return bool
+     * @param WP_REST_Request $request Request object.
+     * @return bool|WP_Error
      */
-    public function check_admin_permission() {
-        return current_user_can('manage_options');
+    public function check_admin_permission($request) {
+        if (!is_user_logged_in()) {
+            return new WP_Error(
+                'rest_forbidden',
+                __('You must be logged in to access this endpoint.', 'aiseo'),
+                array('status' => 401)
+            );
+        }
+
+        if (!current_user_can('manage_options')) {
+            return new WP_Error(
+                'rest_forbidden',
+                __('You do not have permission to access this endpoint.', 'aiseo'),
+                array('status' => 403)
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Check permission to access or modify a specific post.
+     *
+     * @param WP_REST_Request $request Request object.
+     * @return bool|WP_Error
+     */
+    public function check_edit_post_permission($request) {
+        $base = $this->check_permission($request);
+        if (true !== $base) {
+            return $base;
+        }
+
+        $post_id = absint($request->get_param('id') ?: $request->get_param('post_id'));
+        if (!$post_id) {
+            return new WP_Error(
+                'rest_forbidden',
+                __('A valid post ID is required.', 'aiseo'),
+                array('status' => 403)
+            );
+        }
+
+        if (!current_user_can('edit_post', $post_id)) {
+            return new WP_Error(
+                'rest_forbidden',
+                __('You do not have permission to access this post.', 'aiseo'),
+                array('status' => 403)
+            );
+        }
+
+        return true;
+    }
+
+    /**
+     * Check permission to access or modify taxonomy term SEO settings.
+     *
+     * @param WP_REST_Request $request Request object.
+     * @return bool|WP_Error
+     */
+    public function check_edit_term_permission($request) {
+        $base = $this->check_permission($request);
+        if (true !== $base) {
+            return $base;
+        }
+
+        $taxonomy = sanitize_key($request->get_param('taxonomy'));
+        $term_id = absint($request->get_param('term_id'));
+
+        if (!$taxonomy || !$term_id) {
+            return new WP_Error(
+                'rest_forbidden',
+                __('A valid taxonomy and term ID are required.', 'aiseo'),
+                array('status' => 403)
+            );
+        }
+
+        if (!current_user_can('edit_term', $term_id)) {
+            return new WP_Error(
+                'rest_forbidden',
+                __('You do not have permission to access this term.', 'aiseo'),
+                array('status' => 403)
+            );
+        }
+
+        return true;
     }
     
     /**

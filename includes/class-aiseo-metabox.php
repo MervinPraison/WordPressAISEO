@@ -28,11 +28,15 @@ class AISEO_Metabox {
         // Enqueue metabox scripts
         add_action('admin_enqueue_scripts', array($this, 'enqueue_metabox_scripts'));
         
-        // AJAX handlers for AI generation
-        add_action('wp_ajax_aiseo_generate_keyword', array($this, 'ajax_generate_keyword'));
-        add_action('wp_ajax_aiseo_generate_title', array($this, 'ajax_generate_title'));
-        add_action('wp_ajax_aiseo_generate_description', array($this, 'ajax_generate_description'));
-        add_action('wp_ajax_aiseo_analyze_content', array($this, 'ajax_analyze_content'));
+        // AJAX handlers for AI generation.
+        // These use metabox-specific action names: AISEO_Admin registers its own
+        // handlers for the unprefixed `aiseo_generate_*` / `aiseo_analyze_content`
+        // actions, and loads first, so sharing names meant the admin handlers
+        // silently shadowed these ones (and rejected this metabox's nonce).
+        add_action('wp_ajax_aiseo_metabox_generate_keyword', array($this, 'ajax_generate_keyword'));
+        add_action('wp_ajax_aiseo_metabox_generate_title', array($this, 'ajax_generate_title'));
+        add_action('wp_ajax_aiseo_metabox_generate_description', array($this, 'ajax_generate_description'));
+        add_action('wp_ajax_aiseo_metabox_analyze_content', array($this, 'ajax_analyze_content'));
     }
     
     /**
@@ -436,117 +440,6 @@ class AISEO_Metabox {
             AISEO_VERSION,
             true
         );
-    }
-    
-    /**
-     * Get metabox JavaScript
-     *
-     * @return string JavaScript code
-     */
-    private function get_metabox_script() {
-        return "
-        jQuery(document).ready(function($) {
-            // Character counter
-            function updateCharCount(input, counter) {
-                var count = input.val().length;
-                counter.find('.aiseo-current-count').text(count);
-                
-                var maxChars = input.attr('maxlength') || 160;
-                if (count > maxChars * 0.9) {
-                    counter.css('color', '#dc3545');
-                } else {
-                    counter.css('color', '#646970');
-                }
-            }
-            
-            $('.aiseo-title-input').on('input', function() {
-                updateCharCount($(this), $(this).closest('.aiseo-field').find('.aiseo-char-count'));
-            }).trigger('input');
-            
-            $('.aiseo-description-input').on('input', function() {
-                updateCharCount($(this), $(this).closest('.aiseo-field').find('.aiseo-char-count'));
-            }).trigger('input');
-            
-            // Toggle advanced settings
-            $('.aiseo-toggle-header').on('click', function() {
-                var content = $(this).next('.aiseo-advanced-content');
-                var icon = $(this).find('.dashicons');
-                
-                content.slideToggle();
-                icon.toggleClass('dashicons-arrow-down-alt2 dashicons-arrow-up-alt2');
-            });
-            
-            // Generate with AI button
-            $('.aiseo-generate-btn').on('click', function() {
-                var btn = $(this);
-                var field = btn.data('field');
-                var input = field === 'title' ? $('#aiseo_meta_title') : $('#aiseo_meta_description');
-                var postId = $('#post_ID').val();
-                
-                btn.prop('disabled', true).text('Generating...');
-                
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'aiseo_generate_' + field,
-                        post_id: postId,
-                        nonce: $('#aiseo_metabox_nonce').val()
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            input.val(response.data).trigger('input');
-                        } else {
-                            alert('Error: ' + (response.data || 'Failed to generate'));
-                        }
-                    },
-                    error: function() {
-                        alert('Error: Failed to connect to server');
-                    },
-                    complete: function() {
-                        btn.prop('disabled', false).html('<span class=\"dashicons dashicons-admin-generic\"></span> Generate with AI');
-                    }
-                });
-            });
-            
-            // Analyze content button
-            $('.aiseo-analyze-btn').on('click', function() {
-                var btn = $(this);
-                var postId = $('#post_ID').val();
-                var resultsDiv = $('.aiseo-analysis-results');
-                
-                btn.prop('disabled', true).text('Analyzing...');
-                resultsDiv.hide();
-                
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'aiseo_analyze_content',
-                        post_id: postId,
-                        nonce: $('#aiseo_metabox_nonce').val()
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            var html = '<ul>';
-                            $.each(response.data.analyses, function(key, analysis) {
-                                var statusClass = analysis.status === 'good' ? 'green' : (analysis.status === 'ok' ? 'orange' : 'red');
-                                html += '<li><strong>' + analysis.label + ':</strong> <span style=\"color:' + statusClass + '\">' + analysis.score + '/10</span> - ' + analysis.recommendation + '</li>';
-                            });
-                            html += '</ul>';
-                            html += '<p><strong>Overall Score: ' + response.data.overall_score + '/100</strong></p>';
-                            
-                            resultsDiv.find('.aiseo-analysis-content').html(html);
-                            resultsDiv.slideDown();
-                        }
-                    },
-                    complete: function() {
-                        btn.prop('disabled', false).html('<span class=\"dashicons dashicons-chart-bar\"></span> Analyze Content');
-                    }
-                });
-            });
-        });
-        ";
     }
     
     /**

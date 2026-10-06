@@ -523,7 +523,6 @@ class AISEO_API {
                         continue 2; // Continue outer loop
                     }
                     
-                    /* translators: %s: field name */
                     return new WP_Error('missing_field', sprintf(__('Required field "%s" is missing', 'aiseo'), $field));
                 }
             }
@@ -840,7 +839,7 @@ class AISEO_API {
      */
     private function prepare_image_for_vision($image_url) {
         // Check if URL is local or inaccessible
-        $parsed_url = wp_parse_url($image_url);
+        $parsed_url = parse_url($image_url);
         $is_local = false;
         
         if (isset($parsed_url['host'])) {
@@ -971,7 +970,6 @@ class AISEO_API {
         if ($user_requests >= $rate_limit_per_minute) {
             $wait_seconds = 60 - (time() - (int)get_transient('aiseo_user_requests_start_' . $user_id));
             $wait_seconds = max(1, $wait_seconds);
-            /* translators: %d: number of seconds to wait */
             return new WP_Error('rate_limit', sprintf(__('Rate limit exceeded. Please wait %d seconds and try again.', 'aiseo'), $wait_seconds));
         }
         
@@ -1049,7 +1047,6 @@ class AISEO_API {
             case 504:
                 return __('OpenAI service temporarily unavailable', 'aiseo');
             default:
-                /* translators: %d: HTTP status code */
                 return sprintf(__('API error: %d', 'aiseo'), $status_code);
         }
     }
@@ -1064,13 +1061,14 @@ class AISEO_API {
     private function log_usage($success, $tokens_used, $duration) {
         global $wpdb;
         
+        $table_name = $wpdb->prefix . 'aiseo_usage_stats';
         $date = current_time('Y-m-d');
         $request_type = 'generate_content';
         
         // Check if record exists for today
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table query
         $existing = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}aiseo_usage_stats WHERE date = %s AND request_type = %s",
+            "SELECT * FROM $table_name WHERE date = %s AND request_type = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $date,
             $request_type
         ));
@@ -1079,7 +1077,7 @@ class AISEO_API {
             // Update existing record
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table, no WP equivalent
             $wpdb->update(
-                $wpdb->prefix . 'aiseo_usage_stats',
+                $table_name,
                 array(
                     'requests_count' => $existing->requests_count + 1,
                     'tokens_used' => $existing->tokens_used + $tokens_used,
@@ -1095,7 +1093,7 @@ class AISEO_API {
             // Insert new record
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table, no WP equivalent
             $wpdb->insert(
-                $wpdb->prefix . 'aiseo_usage_stats',
+                $table_name,
                 array(
                     'date' => $date,
                     'request_type' => $request_type,

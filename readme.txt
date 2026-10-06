@@ -1,9 +1,9 @@
-=== AI SEO ===
+=== AISEO ===
 Contributors: MervinPraison
 Tags: seo, ai, openai, schema, sitemap
 Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 5.0.6
+Tested up to: 7.1
+Stable tag: 5.0.10
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,7 @@ AI-powered SEO optimization for WordPress. Generate meta descriptions, titles, s
 
 == Description ==
 
-AI SEO is a powerful AI-powered SEO plugin that helps you optimize your WordPress content using OpenAI's GPT-4o-mini model. Automatically generate SEO-optimized titles and descriptions, schema markup, and get comprehensive content analysis.
+AISEO is a powerful AI-powered SEO plugin that helps you optimize your WordPress content using OpenAI's GPT-4o-mini model. Automatically generate SEO-optimized meta titles, descriptions, schema markup, and get comprehensive content analysis.
 
 = Key Features =
 
@@ -90,7 +90,7 @@ This plugin connects to the OpenAI API to provide AI-powered SEO features.
 
 1. Log in to your WordPress admin panel
 2. Navigate to Plugins → Add New
-3. Search for "AI SEO"
+3. Search for "AISEO"
 4. Click "Install Now" and then "Activate"
 
 = Manual Installation =
@@ -103,7 +103,7 @@ This plugin connects to the OpenAI API to provide AI-powered SEO features.
 
 = Configuration =
 
-1. Navigate to Settings → AI SEO
+1. Navigate to Settings → AISEO
 2. Enter your OpenAI API key (get one at https://platform.openai.com/api-keys)
 3. Click "Save Changes"
 4. Start optimizing your content!
@@ -123,7 +123,7 @@ The plugin itself is free. You only pay for OpenAI API usage:
 
 = Does it work with other SEO plugins? =
 
-Yes! AI SEO can import metadata from Yoast SEO, Rank Math, and All in One SEO. You can also export your AI SEO data to JSON or CSV.
+Yes! AISEO can import metadata from Yoast SEO, Rank Math, and All in One SEO. You can also export your AISEO data to JSON or CSV.
 
 = Is my data sent to OpenAI? =
 
@@ -131,19 +131,19 @@ Only when you explicitly use AI generation features. The plugin does not automat
 
 = Does it support WP-CLI? =
 
-Yes! AI SEO includes 70+ WP-CLI commands for automation and batch processing. Perfect for large sites and developers.
+Yes! AISEO includes 70+ WP-CLI commands for automation and batch processing. Perfect for large sites and developers.
 
 = Does it have a REST API? =
 
-Yes! AI SEO provides 60+ REST API endpoints for all features. Perfect for headless WordPress, mobile apps, and custom integrations.
+Yes! AISEO provides 60+ REST API endpoints for all features. Perfect for headless WordPress, mobile apps, and custom integrations.
 
 = Can I use it with custom post types? =
 
-Yes! AI SEO supports all custom post types. You can enable/disable SEO features for any post type.
+Yes! AISEO supports all custom post types. You can enable/disable SEO features for any post type.
 
 = Does it support multilingual sites? =
 
-Yes! AI SEO is compatible with WPML, Polylang, and TranslatePress. It can sync metadata across translations.
+Yes! AISEO is compatible with WPML, Polylang, and TranslatePress. It can sync metadata across translations.
 
 = How do I get support? =
 
@@ -164,8 +164,52 @@ Yes! AI SEO is compatible with WPML, Polylang, and TranslatePress. It can sync m
 
 == Changelog ==
 
+= 5.0.10 =
+* Security: Require a per-post edit_post capability check before bulk, import, export, and AJAX SEO metadata changes, so a Contributor cannot modify posts they do not own
+
+= 5.0.9 =
+* Remove the global browser-console AJAX interceptor that logged every AISEO request's payload and nonce to devtools
+* Remove remaining leftover debug console.log statements from the admin screens, metabox, and image SEO scripts
+
+= 5.0.8 =
+* Security: Remove nonce verification bypass in the AI title and description AJAX handlers; both now enforce check_ajax_referer() and an edit_posts capability check
+* Security: Remove the debug AJAX request logger that wrote nonces, user IDs, and full POST payloads to the error log
+* Security: Require the edit_posts capability on the nonce refresh endpoint
+* Fix: Stop writing debug messages to the error log on every front-end request and WP-CLI command
+* Fix: Give the post editor metabox its own AJAX actions so its handlers are no longer shadowed by the admin screen handlers; the metabox Focus Keyword and Analyze Content buttons work again
+* Remove leftover debug logging from the admin screens and browser console
+
+= 5.0.7 =
+* Security: Require authentication and capability checks on all aiseo/v1 REST API routes
+* Security: Prevent unauthenticated access to settings, redirects, analytics, and post modification endpoints
+* Fix: Add per-post and per-term permission checks for object-specific REST routes
+
+= 5.0.1 =
+* Fix: Limit to 5 tags as required by WordPress.org
+
+= 5.0.0 =
+* Complete rewrite with modern architecture
+* Added REST API with 60+ endpoints
+* Added WP-CLI support with 70+ commands
+* Added Homepage SEO settings (title, description, keywords)
+* Added Taxonomy SEO (categories, tags, custom taxonomies)
+* Added Webmaster Verification (Google, Bing, Yandex, Pinterest, Baidu)
+* Added Google Analytics integration (GA4 support)
+* Added Title Templates with placeholders
+* Added Global Robots Settings (noindex/nofollow)
+* Added Visual Breadcrumbs with shortcode and schema markup
+* Added Legacy Sitemap URLs support (sitemap_index.xml, post-sitemap.xml)
+* Added RSS Feed Customization
+* Added Import from legacy Praison SEO plugin
+* Improved AI-powered content generation
+* Enhanced schema markup support
+* Better performance with caching system
+
+= 4.0.18 =
+* Previous version (legacy Praison SEO)
+
 = 1.0.0 =
-* Initial release of AI SEO - AI-Powered SEO Plugin.
+* Initial release
 * AI-powered meta title and description generation
 * Content analysis engine with 11 SEO metrics
 * Schema markup generator (Article, BlogPosting, WebPage, FAQ, HowTo)
@@ -197,12 +241,52 @@ Yes! AI SEO is compatible with WPML, Polylang, and TranslatePress. It can sync m
 
 == Upgrade Notice ==
 
+= 5.0.9 =
+Removes leftover debug logging that exposed AJAX payloads and nonces in the browser console on wp-admin pages.
+
+= 5.0.8 =
+Important security update. Removes a nonce verification bypass in the AI generation AJAX handlers and stops debug data being written to the error log. Please update immediately.
+
+= 5.0.7 =
+Important security update. Please update immediately.
+
 = 5.0.0 =
 Major update! Complete rewrite with modern architecture, REST API, WP-CLI support, and many new features.
 
+== External Services ==
+
+This plugin relies on the OpenAI API to provide its AI-powered features. It is required for any feature that generates or analyses content with AI.
+
+What it is used for:
+* Generating SEO meta titles, meta descriptions, and focus keywords
+* Generating content outlines, FAQs, briefs, and content suggestions
+* Rewriting and improving existing content
+* Generating image alt text (including image analysis via the vision model)
+* AI-assisted content and SEO analysis
+
+What data is sent and when: when you trigger one of the AI features listed above (manually from the post editor, the plugin admin screens, the REST API, or WP-CLI), the plugin sends the relevant post or image content, and where applicable the focus keyword, to the OpenAI API. No data is sent unless you trigger one of these features, and no data is sent to any service operated by the plugin author.
+
+This service is provided by OpenAI:
+* Terms of use: https://openai.com/policies/row-terms-of-use/
+* Privacy policy: https://openai.com/policies/row-privacy-policy/
+
+You must supply your own OpenAI API key to use these features.
+
+= Google Analytics (optional) =
+
+If you enable the Google Analytics integration and enter your own GA4 measurement ID, the plugin loads the Google Tag (gtag.js) script from Google on your site's front end, which sends visitor analytics data to Google. This is disabled by default and only happens if you enable it and provide a measurement ID.
+
+This service is provided by Google:
+* Terms of service: https://policies.google.com/terms
+* Privacy policy: https://policies.google.com/privacy
+
+= Competitor and backlink analysis (optional) =
+
+The competitor analysis and backlink monitoring features fetch the URLs that you explicitly add in the plugin's settings, in order to read their public pages. Requests are only made to addresses you enter yourself.
+
 == Privacy Policy ==
 
-AI SEO does not collect or store any personal data on our servers. All data remains on your WordPress installation.
+This plugin does not collect or store any personal data on our servers. All data remains on your WordPress installation.
 
 When you use AI-powered features, the plugin sends content to OpenAI's API. Please review OpenAI's privacy policy at https://openai.com/policies/privacy-policy.
 

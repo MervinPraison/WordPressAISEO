@@ -35,6 +35,10 @@ class AISEO_Bulk_Edit {
         $results = [];
         
         foreach ($posts as $post) {
+            if (!current_user_can('edit_post', $post->ID)) {
+                continue;
+            }
+
             $results[] = [
                 'ID' => $post->ID,
                 'title' => $post->post_title,
@@ -83,7 +87,21 @@ class AISEO_Bulk_Edit {
             
             if (!$post) {
                 $results['failed']++;
-                $results['errors'][] = sprintf('Post %d not found', $post_id);
+                $results['errors'][] = sprintf(
+                    /* translators: %d: post ID */
+                    __('Post %d not found', 'aiseo'),
+                    $post_id
+                );
+                continue;
+            }
+
+            if (!current_user_can('edit_post', $post_id)) {
+                $results['failed']++;
+                $results['errors'][] = sprintf(
+                    /* translators: %d: post ID */
+                    __('You are not allowed to edit post %d.', 'aiseo'),
+                    $post_id
+                );
                 continue;
             }
             
@@ -172,7 +190,21 @@ class AISEO_Bulk_Edit {
             
             if (!$post) {
                 $results['failed']++;
-                $results['errors'][] = sprintf('Post %d not found', $post_id);
+                $results['errors'][] = sprintf(
+                    /* translators: %d: post ID */
+                    __('Post %d not found', 'aiseo'),
+                    $post_id
+                );
+                continue;
+            }
+
+            if (!current_user_can('edit_post', $post_id)) {
+                $results['failed']++;
+                $results['errors'][] = sprintf(
+                    /* translators: %d: post ID */
+                    __('You are not allowed to edit post %d.', 'aiseo'),
+                    $post_id
+                );
                 continue;
             }
             
@@ -239,15 +271,23 @@ class AISEO_Bulk_Edit {
             return new WP_Error('invalid_data', __('Invalid post IDs provided', 'aiseo'));
         }
         
+        $allowed_meta_keys = [
+            '_aiseo_meta_title',
+            '_aiseo_meta_description',
+            '_aiseo_focus_keyword',
+            '_aiseo_canonical_url',
+            '_aiseo_robots_index',
+            '_aiseo_robots_follow'
+        ];
+
         if (empty($meta_keys)) {
-            $meta_keys = [
-                '_aiseo_meta_title',
-                '_aiseo_meta_description',
-                '_aiseo_focus_keyword',
-                '_aiseo_canonical_url',
-                '_aiseo_robots_index',
-                '_aiseo_robots_follow'
-            ];
+            $meta_keys = $allowed_meta_keys;
+        } else {
+            $meta_keys = array_values(array_intersect($meta_keys, $allowed_meta_keys));
+        }
+
+        if (empty($meta_keys)) {
+            return new WP_Error('invalid_data', __('No valid metadata keys to delete', 'aiseo'));
         }
         
         $results = [
@@ -260,7 +300,7 @@ class AISEO_Bulk_Edit {
             $post_id = absint($post_id);
             $post = get_post($post_id);
             
-            if (!$post) {
+            if (!$post || !current_user_can('edit_post', $post_id)) {
                 $results['failed']++;
                 continue;
             }
@@ -302,7 +342,7 @@ class AISEO_Bulk_Edit {
             $post_id = absint($update['post_id']);
             $post = get_post($post_id);
             
-            if (!$post) {
+            if (!$post || !current_user_can('edit_post', $post_id)) {
                 continue;
             }
             

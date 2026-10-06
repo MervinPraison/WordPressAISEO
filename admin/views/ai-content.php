@@ -11,15 +11,15 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$aiseo_api_key = '';
+$api_key = '';
 if (class_exists('AISEO_Helpers')) {
-    $aiseo_api_key = AISEO_Helpers::get_api_key();
+    $api_key = AISEO_Helpers::get_api_key();
 }
 ?>
 
 <div class="aiseo-ai-content">
     
-    <?php if (empty($aiseo_api_key)): ?>
+    <?php if (empty($api_key)): ?>
         <div class="aiseo-alert aiseo-alert-warning">
             <strong><?php esc_html_e('API Key Required', 'aiseo'); ?></strong>
             <?php esc_html_e('Please configure your OpenAI API key in Settings to use AI features.', 'aiseo'); ?>
@@ -326,7 +326,6 @@ jQuery(document).ready(function($) {
                 length: length
             },
             success: function(response) {
-                console.log('Generate Content Response:', response);
                 if (response.success && response.data) {
                     var content = parseMarkdown(response.data);
                     $('#aiseo-post-creator-results .aiseo-result-content').html(content);
@@ -379,7 +378,6 @@ jQuery(document).ready(function($) {
                 length: 'medium'
             },
             success: function(response) {
-                console.log('Create Post Response:', response);
                 // Clear refresh flag on success
                 sessionStorage.removeItem('aiseo_nonce_refresh_attempted');
                 
@@ -457,7 +455,6 @@ jQuery(document).ready(function($) {
                 mode: mode
             },
             success: function(response) {
-                console.log('Rewrite Response:', response);
                 if (response.success && response.data) {
                     var content = '';
                     // Handle different response formats
@@ -497,12 +494,10 @@ jQuery(document).ready(function($) {
     
     // Content Suggestions
     $('.aiseo-suggestions-btn').on('click', function() {
-        console.log('Content Suggestions button clicked');
         var $btn = $(this);
         var $form = $('#aiseo-suggestions-form');
         var topic = $form.find('[name="topic"]').val();
         
-        console.log('Topic:', topic);
         
         if (!topic) {
             $('#aiseo-suggestions-result').show().find('.aiseo-result-list').html('<li style="color:red;">Please enter a topic</li>');
@@ -520,7 +515,6 @@ jQuery(document).ready(function($) {
                 topic: topic
             },
             success: function(response) {
-                console.log('Content Suggestions Response:', response);
                 if (response.success && response.data) {
                     var html = '';
                     if (Array.isArray(response.data) && response.data.length > 0) {
@@ -574,7 +568,6 @@ jQuery(document).ready(function($) {
                 keyword: keyword
             },
             success: function(response) {
-                console.log('Outline Response:', response);
                 if (response.success && response.data) {
                     var html = '';
                     
@@ -722,7 +715,6 @@ jQuery(document).ready(function($) {
                 count: count
             },
             success: function(response) {
-                console.log('FAQ Response:', response);
                 if (response.success && response.data) {
                     var html = '';
                     var faqs = [];
@@ -837,7 +829,6 @@ jQuery(document).ready(function($) {
                 length: 'medium'
             },
             success: function(response) {
-                console.log('Create Post Response:', response);
                 if (response.success) {
                     $resultBox.prepend('<div class="notice notice-success is-dismissible" style="margin:10px 0;padding:10px;"><strong>Success!</strong> Post created! <a href="' + response.data.edit_url + '" target="_blank">Edit post</a></div>');
                     // Don't auto-hide - let user manually dismiss if needed

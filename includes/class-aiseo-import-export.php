@@ -55,7 +55,14 @@ class AISEO_Import_Export {
         ];
         
         foreach ($post_ids as $post_id) {
+            if (!current_user_can('edit_post', $post_id)) {
+                continue;
+            }
+
             $post = get_post($post_id);
+            if (!$post) {
+                continue;
+            }
             
             $export_data['posts'][] = [
                 'post_id' => $post_id,
@@ -75,6 +82,12 @@ class AISEO_Import_Export {
                 ]
             ];
         }
+
+        if (empty($export_data['posts'])) {
+            return new WP_Error('no_posts', __('No posts found to export', 'aiseo'));
+        }
+
+        $export_data['post_count'] = count($export_data['posts']);
         
         return $export_data;
     }
@@ -148,9 +161,13 @@ class AISEO_Import_Export {
             $post_id = absint($post_data['post_id']);
             $post = get_post($post_id);
             
-            if (!$post) {
+            if (!$post || !current_user_can('edit_post', $post_id)) {
                 $results['failed']++;
-                $results['errors'][] = sprintf('Post %d not found', $post_id);
+                $results['errors'][] = sprintf(
+                    /* translators: %d: post ID */
+                    __('You are not allowed to edit post %d.', 'aiseo'),
+                    $post_id
+                );
                 continue;
             }
             
@@ -158,11 +175,16 @@ class AISEO_Import_Export {
             $updated = false;
             
             foreach ($metadata as $key => $value) {
-                if (empty($value) && !$options['overwrite']) {
+                $meta_key = $this->allowed_import_meta_key($key);
+                if (!$meta_key) {
+                    continue;
+                }
+
+                $value = $this->sanitize_import_meta_value($key, $value);
+                if ($value === '' && !$options['overwrite']) {
                     continue;
                 }
                 
-                $meta_key = '_aiseo_' . $key;
                 $existing = get_post_meta($post_id, $meta_key, true);
                 
                 if (!empty($existing) && $options['skip_existing']) {
@@ -217,6 +239,11 @@ class AISEO_Import_Export {
         ];
         
         foreach ($posts as $post_id) {
+            if (!current_user_can('edit_post', $post_id)) {
+                $results['failed']++;
+                continue;
+            }
+
             $imported = false;
             
             // Import meta title
@@ -310,6 +337,11 @@ class AISEO_Import_Export {
         ];
         
         foreach ($posts as $post_id) {
+            if (!current_user_can('edit_post', $post_id)) {
+                $results['failed']++;
+                continue;
+            }
+
             $imported = false;
             
             // Import meta title
@@ -408,6 +440,11 @@ class AISEO_Import_Export {
         ];
         
         foreach ($posts as $post_id) {
+            if (!current_user_can('edit_post', $post_id)) {
+                $results['failed']++;
+                continue;
+            }
+
             $imported = false;
             
             // AIOSEO stores data in _aioseo_* meta keys
@@ -475,5 +512,60 @@ class AISEO_Import_Export {
             'overwrite' => true,
             'skip_existing' => false
         ]);
+    }
+
+    /**
+     * Map an import field name to an allowlisted AISEO meta key.
+     *
+     * @param string $key Field name from the import payload.
+     * @return string Meta key, or an empty string when the field is not allowlisted.
+     */
+    private function allowed_import_meta_key($key) {
+        $allowed = array(
+            'meta_title' => '_aiseo_meta_title',
+            'meta_description' => '_aiseo_meta_description',
+            'focus_keyword' => '_aiseo_focus_keyword',
+            'canonical_url' => '_aiseo_canonical_url',
+            'robots_index' => '_aiseo_robots_index',
+            'robots_follow' => '_aiseo_robots_follow',
+            'og_title' => '_aiseo_og_title',
+            'og_description' => '_aiseo_og_description',
+            'twitter_title' => '_aiseo_twitter_title',
+            'twitter_description' => '_aiseo_twitter_description',
+        );
+
+        $key = sanitize_key($key);
+
+        return isset($allowed[$key]) ? $allowed[$key] : '';
+    }
+
+    /**
+     * Sanitise one allowlisted import value.
+     *
+     * @param string $key Field name from the import payload.
+     * @param mixed  $value Raw value.
+     * @return string
+     */
+    private function sanitize_import_meta_value($key, $value) {
+        $key = sanitize_key($key);
+        $value = is_scalar($value) ? (string) $value : '';
+
+        if ($key === 'canonical_url') {
+            return esc_url_raw($value);
+        }
+
+        if ($key === 'robots_index') {
+            return in_array($value, array('index', 'noindex'), true) ? $value : 'index';
+        }
+
+        if ($key === 'robots_follow') {
+            return in_array($value, array('follow', 'nofollow'), true) ? $value : 'follow';
+        }
+
+        if ($key === 'meta_description' || $key === 'og_description' || $key === 'twitter_description') {
+            return sanitize_textarea_field($value);
+        }
+
+        return sanitize_text_field($value);
     }
 }

@@ -12,7 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Get recent posts for selection
-$aiseo_recent_posts = wp_get_recent_posts(array(
+$recent_posts = wp_get_recent_posts(array(
     'numberposts' => 20,
     'post_status' => 'publish,draft',
 ));
@@ -272,7 +272,7 @@ $aiseo_recent_posts = wp_get_recent_posts(array(
 
 <script>
 // Ensure ajaxurl is defined
-var ajaxurl = ajaxurl || '<?php echo esc_url(admin_url('admin-ajax.php')); ?>';
+var ajaxurl = ajaxurl || '<?php echo admin_url('admin-ajax.php'); ?>';
 
 jQuery(document).ready(function($) {
     // Clear refresh flag on page load (prevents infinite loops)
@@ -291,24 +291,6 @@ jQuery(document).ready(function($) {
         
         btn.prop('disabled', true).text('<?php esc_html_e('Generating...', 'aiseo'); ?>');
         
-        // 🔴 COMPREHENSIVE DEBUG LOGGING
-        console.log('========================================');
-        console.log('🔴 SEO TOOLS - AJAX REQUEST STARTING');
-        console.log('========================================');
-        console.log('Timestamp:', new Date().toISOString());
-        console.log('Page loaded at: <?php echo esc_js(current_time('Y-m-d H:i:s')); ?>');
-        console.log('Field:', field);
-        console.log('Post ID:', postId);
-        console.log('Action:', 'aiseo_generate_' + field);
-        console.log('AJAX URL:', ajaxurl);
-        console.log('User ID (PHP):', '<?php echo esc_js(get_current_user_id()); ?>');
-        console.log('---');
-        console.log('aiseoAdmin object:', aiseoAdmin);
-        console.log('aiseoAdmin.nonce:', aiseoAdmin ? aiseoAdmin.nonce : 'UNDEFINED');
-        console.log('aiseoAdmin.ajaxUrl:', aiseoAdmin ? aiseoAdmin.ajaxUrl : 'UNDEFINED');
-        console.log('Nonce being sent:', aiseoAdmin.nonce);
-        console.log('========================================');
-        
         $.ajax({
             url: ajaxurl,
             type: 'POST',
@@ -318,12 +300,6 @@ jQuery(document).ready(function($) {
                 nonce: aiseoAdmin.nonce  // Use localized nonce instead of hardcoded
             },
             success: function(response) {
-                console.log('=== AJAX SUCCESS ===');
-                console.log('Response:', response);
-                console.log('Response Type:', typeof response);
-                console.log('Response Success:', response.success);
-                console.log('Response Data:', response.data);
-                
                 if (response.success) {
                     $('#aiseo-meta-output').html('<strong>' + field.toUpperCase() + ':</strong> ' + response.data);
                     $('#aiseo-meta-results').show();
@@ -333,7 +309,6 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function(xhr, status, error) {
-                console.log('=== AJAX ERROR ===');
                 console.error('XHR Status:', xhr.status);
                 console.error('XHR Status Text:', xhr.statusText);
                 console.error('XHR Response Text:', xhr.responseText);
@@ -472,7 +447,6 @@ jQuery(document).ready(function($) {
                 nonce: aiseoAdmin.nonce
             },
             success: function(response) {
-                console.log('Internal Linking Response:', response);
                 if (response.success && response.data) {
                     var html = '<ul>';
                     var suggestions = [];
@@ -533,7 +507,6 @@ jQuery(document).ready(function($) {
                 nonce: aiseoAdmin.nonce
             },
             success: function(response) {
-                console.log('Title Variations Response:', response);
                 if (response.success && response.data) {
                     if (Array.isArray(response.data) && response.data.length > 0) {
                         var html = '<ol>';
@@ -593,7 +566,6 @@ jQuery(document).ready(function($) {
                 nonce: aiseoAdmin.nonce
             },
             success: function(response) {
-                console.log('Description Variations Response:', response);
                 if (response.success && response.data) {
                     if (Array.isArray(response.data) && response.data.length > 0) {
                         var html = '<ol>';

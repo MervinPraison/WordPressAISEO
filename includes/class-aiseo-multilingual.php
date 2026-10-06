@@ -191,9 +191,7 @@ class AISEO_Multilingual {
         }
         
         $post_type = get_post_type($post_id);
-        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML filter hook
         $trid = apply_filters('wpml_element_trid', null, $post_id, 'post_' . $post_type);
-        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML filter hook
         $translations_data = apply_filters('wpml_get_element_translations', null, $trid, 'post_' . $post_type);
         
         $translations = [];
@@ -301,7 +299,6 @@ class AISEO_Multilingual {
     public function get_default_language() {
         switch ($this->active_plugin) {
             case 'wpml':
-                // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WPML filter hook
                 return apply_filters('wpml_default_language', null);
             case 'polylang':
                 return pll_default_language();
@@ -344,6 +341,17 @@ class AISEO_Multilingual {
      * @return array Result
      */
     public function copy_metadata_to_translation($source_post_id, $target_post_id, $overwrite = false) {
+        $source_post_id = absint($source_post_id);
+        $target_post_id = absint($target_post_id);
+
+        if (!current_user_can('edit_post', $source_post_id) || !current_user_can('edit_post', $target_post_id)) {
+            return [
+                'success' => false,
+                'copied' => 0,
+                'skipped' => 0,
+            ];
+        }
+
         $meta_keys = [
             '_aiseo_meta_title',
             '_aiseo_meta_description',

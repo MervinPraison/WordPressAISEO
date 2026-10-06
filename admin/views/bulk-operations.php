@@ -9,7 +9,7 @@
 if (!defined('ABSPATH')) exit;
 
 // Get all posts for bulk selection
-$aiseo_all_posts = get_posts(array(
+$all_posts = get_posts(array(
     'numberposts' => 100,
     'post_type' => array('post', 'page'),
     'post_status' => 'any',
@@ -186,7 +186,6 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success && response.data.nonce) {
                     aiseoBulkNonce = response.data.nonce;
-                    console.log('Nonce refreshed successfully');
                     if (callback) callback();
                 }
             },
@@ -250,7 +249,6 @@ jQuery(document).ready(function($) {
                     nonce: aiseoBulkNonce
                 },
                 success: function(response) {
-                    console.log('Bulk AJAX response for post', post.id, ':', response);
                     // Clear refresh flag on success
                     sessionStorage.removeItem('aiseo_nonce_refresh_attempted');
                     
@@ -279,7 +277,6 @@ jQuery(document).ready(function($) {
                     if (xhr.status === 403 && xhr.responseText === '-1') {
                         if (!sessionStorage.getItem('aiseo_nonce_refresh_attempted')) {
                             sessionStorage.setItem('aiseo_nonce_refresh_attempted', '1');
-                            console.log('Nonce expired, refreshing nonce and retrying...');
                             
                             // Refresh nonce and retry this request
                             refreshNonce(function() {
@@ -320,7 +317,6 @@ jQuery(document).ready(function($) {
         var html = '';
         var fieldLabel = fieldType === 'title' ? 'Title' : (fieldType === 'description' ? 'Description' : 'Analysis');
         
-        console.log('Displaying results:', bulkResults);
         
         $.each(bulkResults, function(i, result) {
             if (result.success) {
@@ -511,11 +507,6 @@ jQuery(document).ready(function($) {
                 nonce: aiseoAdmin.nonce
             },
             success: function(response) {
-                console.log('Export Response:', response);
-                console.log('Export format:', format);
-                console.log('Response data type:', typeof response.data);
-                console.log('Response data is array:', Array.isArray(response.data));
-                console.log('Response data length:', response.data ? response.data.length : 0);
                 
                 if (response.success && response.data) {
                     var content, mimeType;

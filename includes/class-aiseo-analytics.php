@@ -177,7 +177,6 @@ class AISEO_Analytics {
      * @param array $settings Settings
      */
     private function output_ga4_code($tracking_id, $settings) {
-        // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Google Analytics must be inline in head for proper tracking per Google's requirements
         ?>
 <!-- Google Analytics (GA4) - AISEO -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr($tracking_id); ?>"></script>
@@ -197,7 +196,6 @@ gtag('config', '<?php echo esc_js($tracking_id); ?>'<?php
 </script>
 <!-- End Google Analytics -->
         <?php
-        // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
     }
     
     /**
@@ -207,7 +205,6 @@ gtag('config', '<?php echo esc_js($tracking_id); ?>'<?php
      * @param array $settings Settings
      */
     private function output_universal_code($tracking_id, $settings) {
-        // phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript -- Google Analytics must be inline in head per Google's requirements
         ?>
 <!-- Google Analytics (Universal) - AISEO -->
 <script>
@@ -223,6 +220,5 @@ ga('send', 'pageview');
 </script>
 <!-- End Google Analytics -->
         <?php
-        // phpcs:enable WordPress.WP.EnqueuedResources.NonEnqueuedScript
     }
 }

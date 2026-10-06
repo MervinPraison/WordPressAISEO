@@ -247,6 +247,11 @@ class AISEO_CPT {
         ];
         
         foreach ($posts as $post) {
+            if (!current_user_can('edit_post', $post->ID)) {
+                $results['failed']++;
+                continue;
+            }
+
             $post_result = [
                 'post_id' => $post->ID,
                 'title' => $post->post_title,

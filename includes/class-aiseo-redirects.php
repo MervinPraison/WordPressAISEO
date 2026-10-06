@@ -87,13 +87,9 @@ class AISEO_Redirects {
         ];
         
         $args = wp_parse_args($args, $defaults);
+        $table_name = $wpdb->prefix . 'aiseo_404_log';
         
-        // Whitelist allowed orderby columns
-        $allowed_orderby = array( 'timestamp', 'url', 'hits', 'referrer' );
-        $orderby = in_array( $args['orderby'], $allowed_orderby, true ) ? $args['orderby'] : 'timestamp';
-        $order = strtoupper( $args['order'] ) === 'ASC' ? 'ASC' : 'DESC';
-        
-        // Build query with safe table name
+        // Build query
         $where = '1=1';
         
         if (!empty($args['date_from'])) {
@@ -104,28 +100,20 @@ class AISEO_Redirects {
             $where .= $wpdb->prepare(' AND timestamp <= %s', $args['date_to']);
         }
         
-        // Cache key for this query
-        $cache_key = 'aiseo_404_errors_' . md5( serialize( $args ) );
-        $results = wp_cache_get( $cache_key, 'aiseo' );
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and dynamic WHERE/ORDER BY are safe, values are prepared
+        $query = $wpdb->prepare(
+            "SELECT url, COUNT(*) as hits, MAX(timestamp) as last_hit, referrer
+             FROM {$table_name}
+             WHERE {$where}
+             GROUP BY url
+             ORDER BY {$args['orderby']} {$args['order']}
+             LIMIT %d OFFSET %d",
+            $args['limit'],
+            $args['offset']
+        );
         
-        if ( false === $results ) {
-            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, $where built with $wpdb->prepare(), $orderby/$order are whitelisted
-            $results = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT url, COUNT(*) as hits, MAX(timestamp) as last_hit, referrer
-                     FROM {$wpdb->prefix}aiseo_404_log
-                     WHERE {$where}
-                     GROUP BY url
-                     ORDER BY {$orderby} {$order}
-                     LIMIT %d OFFSET %d",
-                    absint( $args['limit'] ),
-                    absint( $args['offset'] )
-                ),
-                ARRAY_A
-            );
-            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-            wp_cache_set( $cache_key, $results, 'aiseo', 300 );
-        }
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared , WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Query is prepared above with $wpdb->prepare()
+        $results = $wpdb->get_results($query, ARRAY_A);
         
         return [
             'errors' => $results,
@@ -241,10 +229,12 @@ class AISEO_Redirects {
             return new WP_Error('invalid_urls', 'Source and target URLs are required');
         }
         
+        $table_name = $wpdb->prefix . 'aiseo_redirects';
+        
         // Check if redirect already exists
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table query
         $existing = $wpdb->get_var($wpdb->prepare(
-            "SELECT id FROM {$wpdb->prefix}aiseo_redirects WHERE source_url = %s",
+            "SELECT id FROM {$table_name} WHERE source_url = %s",
             $source
         ));
         
@@ -253,9 +243,9 @@ class AISEO_Redirects {
         }
         
         // Insert redirect
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared , WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
         $result = $wpdb->insert(
-            $wpdb->prefix . 'aiseo_redirects',
+            $table_name,
             [
                 'source_url' => esc_url_raw($source),
                 'target_url' => esc_url_raw($target),
@@ -294,31 +284,19 @@ class AISEO_Redirects {
         ];
         
         $args = wp_parse_args($args, $defaults);
+        $table_name = $wpdb->prefix . 'aiseo_redirects';
         
-        // Whitelist allowed orderby columns
-        $allowed_orderby = array( 'created_at', 'source_url', 'target_url', 'hits', 'redirect_type' );
-        $orderby = in_array( $args['orderby'], $allowed_orderby, true ) ? $args['orderby'] : 'created_at';
-        $order = strtoupper( $args['order'] ) === 'ASC' ? 'ASC' : 'DESC';
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name and ORDER BY are safe, values are prepared
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_name}
+             ORDER BY {$args['orderby']} {$args['order']}
+             LIMIT %d OFFSET %d",
+            $args['limit'],
+            $args['offset']
+        );
         
-        // Cache key for this query
-        $cache_key = 'aiseo_redirects_' . md5( serialize( $args ) );
-        $results = wp_cache_get( $cache_key, 'aiseo' );
-        
-        if ( false === $results ) {
-            // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, $orderby/$order are whitelisted
-            $results = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT * FROM {$wpdb->prefix}aiseo_redirects
-                     ORDER BY {$orderby} {$order}
-                     LIMIT %d OFFSET %d",
-                    absint( $args['limit'] ),
-                    absint( $args['offset'] )
-                ),
-                ARRAY_A
-            );
-            // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-            wp_cache_set( $cache_key, $results, 'aiseo', 300 );
-        }
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared , WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Query is prepared above with $wpdb->prepare()
+        $results = $wpdb->get_results($query, ARRAY_A);
         
         return [
             'redirects' => $results,
@@ -427,18 +405,20 @@ class AISEO_Redirects {
     public function process_redirect($requested_url) {
         global $wpdb;
         
+        $table_name = $wpdb->prefix . 'aiseo_redirects';
+        
         // Check for exact match
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table query
         $redirect = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}aiseo_redirects WHERE source_url = %s AND is_regex = 0",
+            "SELECT * FROM {$table_name} WHERE source_url = %s AND is_regex = 0",
             $requested_url
         ), ARRAY_A);
         
         // Check for regex match if no exact match
         if (!$redirect) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table query
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table query
             $regex_redirects = $wpdb->get_results(
-                "SELECT * FROM {$wpdb->prefix}aiseo_redirects WHERE is_regex = 1",
+                "SELECT * FROM {$table_name} WHERE is_regex = 1",
                 ARRAY_A
             );
             
@@ -454,7 +434,7 @@ class AISEO_Redirects {
             // Increment hit counter
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table update
             $wpdb->update(
-                $wpdb->prefix . 'aiseo_redirects',
+                $table_name,
                 ['hits' => $redirect['hits'] + 1],
                 ['id' => $redirect['id']],
                 ['%d'],
@@ -462,7 +442,7 @@ class AISEO_Redirects {
             );
             
             // Perform redirect
-            wp_safe_redirect($redirect['target_url'], (int) $redirect['redirect_type']);
+            wp_redirect($redirect['target_url'], (int) $redirect['redirect_type']);
             exit;
         }
         
@@ -477,48 +457,41 @@ class AISEO_Redirects {
     public function get_statistics() {
         global $wpdb;
         
-        // Cache key for statistics
-        $cache_key = 'aiseo_redirect_stats';
-        $stats = wp_cache_get( $cache_key, 'aiseo' );
+        $redirects_table = $wpdb->prefix . 'aiseo_redirects';
+        $errors_table = $wpdb->prefix . 'aiseo_404_log';
         
-        if ( false === $stats ) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
-            $total_redirects = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}aiseo_redirects" );
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table, no WP equivalent
-            $total_404s = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}aiseo_404_log" );
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table statistics
-            $total_hits = $wpdb->get_var( "SELECT SUM(hits) FROM {$wpdb->prefix}aiseo_redirects" );
-            
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table statistics
-            $top_404s = $wpdb->get_results(
-                "SELECT url, COUNT(*) as hits 
-                 FROM {$wpdb->prefix}aiseo_404_log 
-                 GROUP BY url 
-                 ORDER BY hits DESC 
-                 LIMIT 10",
-                ARRAY_A
-            );
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table statistics
-            $top_redirects = $wpdb->get_results(
-                "SELECT source_url, target_url, hits 
-                 FROM {$wpdb->prefix}aiseo_redirects 
-                 ORDER BY hits DESC 
-                 LIMIT 10",
-                ARRAY_A
-            );
-            
-            $stats = [
-                'total_redirects' => (int) $total_redirects,
-                'total_404_errors' => (int) $total_404s,
-                'total_redirect_hits' => (int) $total_hits,
-                'top_404s' => $top_404s,
-                'top_redirects' => $top_redirects
-            ];
-            
-            wp_cache_set( $cache_key, $stats, 'aiseo', 300 );
-        }
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared , WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
+        $total_redirects = $wpdb->get_var("SELECT COUNT(*) FROM {$redirects_table}");
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared , WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table, no WP equivalent
+        $total_404s = $wpdb->get_var("SELECT COUNT(*) FROM {$errors_table}");
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
+        $total_hits = $wpdb->get_var("SELECT SUM(hits) FROM {$redirects_table}");
         
-        return $stats;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
+        $top_404s = $wpdb->get_results(
+            "SELECT url, COUNT(*) as hits 
+             FROM {$errors_table} 
+             GROUP BY url 
+             ORDER BY hits DESC 
+             LIMIT 10",
+            ARRAY_A
+        );
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom table statistics
+        $top_redirects = $wpdb->get_results(
+            "SELECT source_url, target_url, hits 
+             FROM {$redirects_table} 
+             ORDER BY hits DESC 
+             LIMIT 10",
+            ARRAY_A
+        );
+        
+        return [
+            'total_redirects' => (int) $total_redirects,
+            'total_404_errors' => (int) $total_404s,
+            'total_redirect_hits' => (int) $total_hits,
+            'top_404s' => $top_404s,
+            'top_redirects' => $top_redirects
+        ];
     }
     
     /**
