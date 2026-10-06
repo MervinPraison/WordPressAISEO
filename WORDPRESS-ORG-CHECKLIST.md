@@ -139,41 +139,16 @@ zip -r aiseo-1.0.0.zip aiseo-release/
 - **Manual Review**: 2-4 days typically
 - **Respond Promptly**: If reviewers have questions
 
-### Step 4: SVN Setup (After Approval)
+### Step 4: Release an update
 
-Once approved, you'll receive an SVN repository URL:
+The plugin is already in the directory as `seo-wordpress`. Checkout: `/Users/praison/seo-wordpress-svn`.
 
 ```bash
-# Set SVN password at:
-# https://profiles.wordpress.org/me/profile/edit/group/3/?screen=svn-password
-
-# Checkout repository
-svn co https://plugins.svn.wordpress.org/aiseo/ aiseo-svn
-
-# Copy files to trunk
-cp -r aiseo-release/* aiseo-svn/trunk/
-
-# Add files to SVN
-cd aiseo-svn
-svn add trunk/* --force
-
-# Commit to trunk
-svn ci -m "Initial release v1.0.0" --username praisonai
-
-# Create tag
-svn cp trunk tags/1.0.0
-
-# Commit tag
-svn ci -m "Tagging version 1.0.0" --username praisonai
-
-# Add assets (after creating them)
-cp banner-*.png aiseo-svn/assets/
-cp icon-*.png aiseo-svn/assets/
-cp screenshot-*.png aiseo-svn/assets/
-cd aiseo-svn/assets
-svn add *.png
-svn ci -m "Add plugin assets" --username praisonai
+cd /Users/praison/aiseo
+./publish.sh 5.0.10
 ```
+
+That commits `trunk`, then copies it to `tags/<version>`. The Stable tag in `readme.txt` must be that version. SVN username is `mervinpraison`.
 
 ---
 
@@ -217,23 +192,17 @@ Use semantic versioning:
 
 ### 4. Update Process
 
+The directory slug is `seo-wordpress`. The SVN working copy on this Mac is `/Users/praison/seo-wordpress-svn`.
+
 ```bash
-# 1. Update version in files
-# - aiseo.php (Version: 1.0.1)
-# - readme.txt (Stable tag: 1.0.1)
-# - AISEO_VERSION constant
-
-# 2. Update changelog in readme.txt
-
-# 3. Commit to SVN trunk
-cd aiseo-svn
-cp -r ../aiseo-release/* trunk/
-svn ci -m "Update to version 1.0.1" --username praisonai
-
-# 4. Create new tag
-svn cp trunk tags/1.0.1
-svn ci -m "Tagging version 1.0.1" --username praisonai
+# 1. Update the version in seo-wordpress.php, aiseo.php, and readme.txt
+# 2. Set "Tested up to" and add a changelog entry in readme.txt
+# 3. Publish trunk and the matching tag
+cd /Users/praison/aiseo
+./publish.sh 5.0.10
 ```
+
+`publish.sh` commits trunk, then runs `svn cp trunk tags/<version>` and commits the tag. Do not copy files straight into a tag directory.
 
 ---
 
@@ -312,12 +281,10 @@ wp plugin install query-monitor --activate
 
 ## 🎯 Next Steps
 
-1. **Create Assets** - Design banner, icon, and take screenshots
-2. **Final Testing** - Test on clean WordPress 6.8 install
-3. **Create Release ZIP** - Package plugin without dev files
-4. **Submit to WordPress.org** - Upload and wait for review
-5. **Setup SVN** - After approval, commit to SVN repository
-6. **Monitor** - Watch support forum and respond to users
+1. Run Plugin Check against the 5.0.10 build
+2. Publish with `./publish.sh 5.0.10`
+3. Reply to plugins@wordpress.org and ask for a re-review
+4. Watch https://wordpress.org/support/plugin/seo-wordpress/
 
 ---
 

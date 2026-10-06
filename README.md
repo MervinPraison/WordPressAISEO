@@ -969,45 +969,30 @@ wp aiseo import yoast --post-type=post
 ## 📦 Publishing to WordPress.org
 
 This repository contains both `aiseo.php` and `seo-wordpress.php` (same content, different plugin names):
-- **aiseo.php** - AISEO plugin
-- **seo-wordpress.php** - Praison AI SEO plugin (for WordPress.org slug `seo-wordpress`)
+- **aiseo.php** - local plugin header
+- **seo-wordpress.php** - Praison AI SEO, the file shipped for the WordPress.org slug `seo-wordpress`
 
-### Publishing Steps
-
-```bash
-# 1. Update version in aiseo.php, seo-wordpress.php, and readme.txt
-
-# 2. Sync to SVN trunk
-rsync -av --exclude='.git' --exclude='node_modules' --exclude='tests' --exclude='.env' --exclude='*.md' \
-  /home/mervin/wordpress-plugins/WordPressAISEO/ \
-  /home/mervin/wordpress-plugins/seo-wordpress-svn/trunk/ --delete
-
-# 3. Remove dev files from SVN
-rm -f trunk/.distignore trunk/.gitignore trunk/add-logging.js trunk/api-index.jsonl trunk/aiseo.php
-
-# 4. Commit to SVN
-cd /home/mervin/wordpress-plugins/seo-wordpress-svn
-svn ci -m "Version X.X.X" --username mervinpraison
-
-# 5. Create tag
-svn cp trunk tags/X.X.X
-svn ci -m "Tagging version X.X.X" --username mervinpraison
-```
-
-### Git Remotes
+The plugin SVN checkout is `/Users/praison/seo-wordpress-svn` (`https://plugins.svn.wordpress.org/seo-wordpress`). WordPress.org only sees SVN, and only a finished release should be committed there. Update trunk, then copy trunk to a tag with `svn cp`. The Stable tag in `readme.txt` must match that tag.
 
 ```bash
-origin     -> github.com:MervinPraison/WordPressAISEO.git (main)
-praison    -> github.com/Praison/seo-wordpress.git (master)
-mervin-seo -> github.com/MervinPraison/seo-wordpress.git (master)
+# From this repository. Version is read from seo-wordpress.php.
+# Uses the cached WordPress.org SVN login for mervinpraison.
+./publish.sh 5.0.10
+
+# Preview the trunk sync without committing:
+./publish.sh 5.0.10 --dry-run
 ```
 
-### Push to All Remotes
+`publish.sh` syncs this directory to `trunk/`, removes `aiseo.php` and development files, commits trunk, then tags `tags/<version>`.
+
+### Git remote
+
+```bash
+origin -> github.com:MervinPraison/WordPressAISEO.git (main)
+```
 
 ```bash
 git push origin main
-git push praison main:master
-git push mervin-seo main:master
 ```
 
 ---
